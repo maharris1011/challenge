@@ -19,10 +19,10 @@ libraries. There is very likely a system library that counts matching characters
 which would defeat the purpose of learning.
 
 # Test Cases
-fn('a', "abc") == 1
-fn('a', "abba") == 2
-fn('a', "bccd") == 0
-fn('c', "bccd") == 2
-fn('e', "") == 0
-fn('', "") == 0
-fn('', "abcdef") == 0
+- fn('a', "abc") == 1
+- fn('a', "abba") == 2
+- fn('a', "bccd") == 0
+- fn('c', "bccd") == 2
+- fn('e', "") == 0
+- fn('', "") == 0
+- fn('', "abcdef") == 0
