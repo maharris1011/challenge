@@ -1,5 +1,5 @@
 //This is the same function but accepts a char array instead, 
-//so doesnt require including the string library
+//so it doesn't require including the string library
 
 int charCount2(char search, char input[])
 {
