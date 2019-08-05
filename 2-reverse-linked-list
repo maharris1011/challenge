@@ -19,6 +19,8 @@ node *reverseList(node *) {
 }
 ```
 
+Each node in the list points to the next. The last node has a *next of NULL.
+
 **NOTE:** do not use the C++ standard library functions for list manipulation. This is an exercise
 to see how you would implement the algorithm. For that matter, do not use any standard library
 functions for whatever language you choose. (unless it's LISP/Scheme, in which case you can use CAR and CDR)
