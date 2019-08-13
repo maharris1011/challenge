@@ -32,7 +32,7 @@ A becomes A (single-node lists are already reversed)
 null lists are already reversed also
 
 # To-Do
-[ ] create a folder for this challenge (2-reverse-linked-list)
-[ ] create a folder for the code solution in whatever language you'll use
-[ ] write the code
-[ ] submit a pull-request for review
+-[ ] create a folder for this challenge (2-reverse-linked-list)
+-[ ] create a folder for the code solution in whatever language you'll use
+-[ ] write the code
+-[ ] submit a pull-request for review
