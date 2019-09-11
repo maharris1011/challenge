@@ -3,20 +3,20 @@ module Main where
 listOfDigits :: Integer -> [Integer]
 listOfDigits x
   | x < 10 = [x]
-  | otherwise = (x `mod` 10):listOfDigits (x `div` 10)
+  | otherwise = listOfDigits (x `div` 10) ++ [(x `mod` 10)]
 
-pow :: Integer -> Integer -> Integer
-pow e x = x ^ e
+-- minimum number where 10^d > 9^5d
+maxNumber :: Integer -> Integer -> Integer
+maxNumber d e 
+  | 10^d-1 > (9^e) * d = (9^e) * d
+  | otherwise = maxNumber (d+1) e
 
-digitSumPower :: Integer -> Integer -> Integer
-digitSumPower x n = sum (map (pow n) (listOfDigits x))
-
-findMatch :: Integer -> Integer
-findMatch x
-  | x == (digitSumPower x 5) = x
-  | otherwise = -1
+findMatchesOfPower :: Integer -> [Integer]
+findMatchesOfPower e = do
+  let mini = maxNumber 2 e
+  filter p [10..mini]
+    where p x = (sum (map (^e) (listOfDigits x))) == x
 
 main :: IO ()
 main = do
-  let matches = [findMatch x | x <- [10..2^32]]
-  print (filter (>0) matches)
+  print (findMatchesOfPower 8)

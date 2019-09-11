@@ -1,21 +1,19 @@
 
 var digitSum = (x, n) => {
   return x.toString().split('').map((val) => {
-    return Math.pow(val, n)
+    return BigInt(val ** n)
   }).reduce((sum, val) => {
-    return sum + val
+    return BigInt(sum) + BigInt(val)
   }, 0)
 }
 
 var matches = []
-for (var i = 2; i < 10000000; i++) {
+for (var i = 10n; i < 2n**32n; i++) {
   if (digitSum(i, 5) === i) {
     matches.push(i)
   }  
 }
 
-console.log(matches.join(' + ') + ' = ' + matches.filter((val) => {
-  return val != null
-}).reduce((sum, val) => {
-  return sum+val
+console.log(matches.join(' + ') + ' = ' + matches.reduce((sum, val) => {
+  return BigInt(sum)+BigInt(val)
 }, 0))
