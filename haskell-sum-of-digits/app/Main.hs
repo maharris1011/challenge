@@ -19,4 +19,4 @@ findMatchesOfPower e = do
 
 main :: IO ()
 main = do
-  print (findMatchesOfPower 8)
+  print (findMatchesOfPower 5)
