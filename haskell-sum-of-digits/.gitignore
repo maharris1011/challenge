@@ -1,3 +1,4 @@
 .stack-work/
 haskell-sum-of-digits.cabal
+dist-newstyle
 *~
