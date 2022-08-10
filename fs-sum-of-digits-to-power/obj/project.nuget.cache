@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "wQaT9P/41RJwUoR+m6+ELoz8dyYhhFYCJeVP88ILp4ARxyoBsDf+bTCUMNKZ36cgWo7UYeBVRMoPe4pLVko5Mw==",
+  "success": true,
+  "projectFilePath": "/Users/markharris/Code/challenge/fs-sum-of-digits-to-power/fs-sum-of-digits-to-power.fsproj",
+  "expectedPackageFiles": [
+    "/Users/markharris/.nuget/packages/fsharp.core/6.0.5/fsharp.core.6.0.5.nupkg.sha512"
+  ],
+  "logs": []
+}
