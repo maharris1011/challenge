@@ -1,5 +1,3 @@
-
-
 defmodule SumDigits do
   def number_to_list_of_digits(n) when n < 10 do
     [n]
@@ -18,6 +16,10 @@ defmodule SumDigits do
     end
   end
 
+  def max_number(e) do
+    max_number(2, e)
+  end
+
   def sum_of_digits_to_power(n, e) do
     number_to_list_of_digits(n)
     |> Enum.map(fn n -> :math.pow(n, e) end)
@@ -26,15 +28,12 @@ defmodule SumDigits do
 
 end
 
-# list = SumDigits.number_to_list_of_digits(123)
-# IO.puts(["list of digits is ", Enum.join(list, ", ")])
-
-maxnum = SumDigits.max_number(2, 5)
-IO.puts("the max number is #{maxnum}")
-
+power = 5
+candidates = 10..SumDigits.max_number(power)
 sum_matches_number =
-  for n <- 10..maxnum, SumDigits.sum_of_digits_to_power(n, 5) == n do
+  for n <- candidates, SumDigits.sum_of_digits_to_power(n, power) == n do
     n
   end
 
 IO.puts(Enum.join(sum_matches_number, ", "))
+
