@@ -1,4 +1,6 @@
 module Main where
+import System.Environment
+
 
 listOfDigits :: Integer -> [Integer]
 listOfDigits x
@@ -19,4 +21,7 @@ findMatchesOfPower e = do
 
 main :: IO ()
 main = do
-  print (findMatchesOfPower 5)
+  args <- getArgs
+  let str = ("max number is " ++ show (maxNumber 2 args[0]))
+  putStrLn str
+  print (findMatchesOfPower args[0])
