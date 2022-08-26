@@ -15,12 +15,12 @@ defmodule SumDigits do
       4150, 4151, 54748, 92727, 93084, 194979
 
   """
-  def number_to_list_of_digits(n) when n < 10 do
-    [n]
-  end
 
   def number_to_list_of_digits(n) do
-    number_to_list_of_digits(div(n, 10)) ++ [rem(n, 10)]
+    case n do
+      n when n < 10 -> [n]
+      _ -> number_to_list_of_digits(div(n, 10)) ++ [rem(n, 10)]
+    end
   end
 
   def max_number(d, e) do
@@ -43,18 +43,19 @@ defmodule SumDigits do
     |> Enum.reduce(0, fn n, acc -> acc + n end)
   end
 
+  def main(args) do
+    options = [switches: [power: :integer],aliases: [p: :power]]
+    {opts,_,_}= OptionParser.parse(args, options)
+    power = opts[:power]
+
+    candidates = 10..SumDigits.max_number(power)
+    sum_matches_number = Stream.filter(candidates, 
+      fn(n) -> SumDigits.sum_of_digits_to_power(n, power) == n end)
+
+    IO.inspect Enum.to_list(sum_matches_number)
+  end
 
   def start(_type, _args) do
-    IO.puts "starting"
-    power = 5
-    candidates = 10..SumDigits.max_number(power)
-
-    sum_matches_number =
-      for n <- candidates, SumDigits.sum_of_digits_to_power(n, power) == n do
-        n
-      end
-
-    IO.puts(Enum.join(sum_matches_number, ", "))
     Supervisor.start_link [], strategy: :one_for_one
   end
 end
