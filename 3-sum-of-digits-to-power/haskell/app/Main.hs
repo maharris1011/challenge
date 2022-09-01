@@ -11,7 +11,7 @@ listOfDigits x
 -- minimum number where 10^d > 9^5d
 maxNumber :: Integer -> Integer -> Integer
 maxNumber d e
-  | 10^d-1 > (9^e) * d = (9^e) * d
+  | 10^d-1 > ((9^e) * d) = (9^e) * d
   | otherwise = maxNumber (d+1) e
 
 findMatchesOfPower :: Integer -> [Integer]
