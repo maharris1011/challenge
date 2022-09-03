@@ -8,7 +8,7 @@ module SumOfDigits =
 
             match (maxByDigit, maxSumDigits) with
             | (var1, var2) when var1 > var2 -> var2
-            | otherwise -> maxNumber (int (digit) + 1)
+            | otherwise -> maxNumber (digit + 1)
 
         let rec listOfDigits (x: int) =
             match x with
