@@ -20,7 +20,8 @@ maxNumber' d e accum
 digitsToPower :: Integer -> Integer -> [Integer]
 digitsToPower x e = map (^e) (listOfDigits x)
 
-sumOfDigitsToPower num e = sum(digitsToPower num e)
+sumOfDigitsToPower :: Integer -> Integer -> Integer
+sumOfDigitsToPower num e = (sum (digitsToPower num e))
 
 candidatePairs :: Integer -> [(Integer, Integer)]
 candidatePairs e = [(x, sumOfDigitsToPower x e) | x <- [10..(maxNumber e)]]
