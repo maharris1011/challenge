@@ -23,9 +23,7 @@ digitsToPower x e = map (^e) (listOfDigits x)
 sumOfDigitsToPower num e = sum(digitsToPower num e)
 
 candidatePairs :: Integer -> [(Integer, Integer)]
-candidatePairs e = do
-  let num = (maxNumber e)
-  [(x, sumOfDigitsToPower x e) | x <- [10..num]]
+candidatePairs e = [(x, sumOfDigitsToPower x e) | x <- [10..(maxNumber e)]]
 
 matchingPairs :: Integer -> [(Integer, Integer)]
 matchingPairs e = [(x, y) | (x, y) <- (candidatePairs e), x == y]
