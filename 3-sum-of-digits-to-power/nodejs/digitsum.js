@@ -21,9 +21,15 @@ function* range(start, end) {
   }
 }
 
+const myArgs = process.argv.slice(2)
+
+let exp = myArgs[0] || 5
+
 //var matches = []
-let minNum = minNumber(2, 5)
-let matches = [...range(10, minNum)].filter((i) => digitSum(i, 5) === BigInt(i))
+let minNum = minNumber(2, exp)
+let matches = [...range(10, minNum)].filter(
+  (i) => digitSum(i, exp) === BigInt(i)
+)
 
 console.log(
   matches.join(" + ") +
