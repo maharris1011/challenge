@@ -5,44 +5,41 @@
 long max_num(int exponent)
 {
   int digit = 2;
-  while (1)
+  long retval;
+  long maximum;
+  do
   {
-    long largestDigitSum = pow(9, exponent) * digit;
-    long largestXDigitNumber = pow(10, digit) - 1;
-    if (largestXDigitNumber > largestDigitSum)
-    {
-      return largestDigitSum;
-    }
-    else
-    {
-      digit++;
-    }
-  }
+    maximum = pow(10, digit) - 1;
+    retval = pow(9, exponent) * digit;
+    digit++;
+  } while (maximum > retval);
+  return pow(9, exponent) * (digit + 1);
+}
+
+int num_of_digits(long num)
+{
+  return floor(log10(num)) + 1;
 }
 
 int *list_of_digits(long num)
 {
-  int num_digits = floor(log10(num)) + 1;
+  int num_digits = num_of_digits(num);
   int *retval = malloc(num_digits * sizeof(int));
   int index = 0;
-  long lastDigit = num % 10;
-  long remainder = num / 10;
-  while (remainder > 0)
+  for (int i = 0; i < num_digits; i++)
   {
-    retval[index++] = lastDigit;
-    lastDigit = remainder % 10;
-    remainder = remainder / 10;
+    retval[i] = num % 10;
+    num = num / 10;
   }
-  retval[index++] = lastDigit;
   return retval;
 }
 
 long sum_digits(long num, int exponent)
 {
   int *digits = list_of_digits(num);
-  int num_of_digits = floor(log10(num)) + 1;
+  int num_digits = num_of_digits(num);
   long retval = 0;
-  for (int i = 0; i < num_of_digits; i++)
+  for (int i = 0; i < num_digits; i++)
   {
     retval += pow(digits[i], exponent);
   }
@@ -52,7 +49,7 @@ long sum_digits(long num, int exponent)
 
 long *matching_numbers(int exponent)
 {
-  long *sumEqualNum = malloc(50 * sizeof(long));
+  long *sumEqualNum = malloc(20 * sizeof(long));
   long max = max_num(exponent);
   int idx = 0;
   for (long i = 10; i < max; i++)
@@ -66,13 +63,19 @@ long *matching_numbers(int exponent)
   return sumEqualNum;
 }
 
-int main(int argc, char **argv)
+int parse_args(int argc, char **argv)
 {
-  int exponent = 5;
+  int retval = 5;
   if (argc > 1)
   {
-    exponent = atoi(argv[1]);
+    retval = atoi(argv[1]);
   }
+  return retval;
+}
+
+int main(int argc, char **argv)
+{
+  int exponent = parse_args(argc, argv);
   long *rgMatchingNumbers = matching_numbers(exponent);
   for (int i = 0; rgMatchingNumbers[i] != 0; i++)
   {
