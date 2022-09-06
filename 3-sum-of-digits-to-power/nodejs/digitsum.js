@@ -15,24 +15,17 @@ let minNumber = (d, n) => {
   }
 }
 
-function* range(start, end) {
-  for (let i = start; i <= end; i++) {
-    yield i
-  }
-}
-
 const myArgs = process.argv.slice(2)
 
 let exp = myArgs[0] || 5
 
-//var matches = []
+var matches = []
 let minNum = minNumber(2, exp)
-let matches = [...range(10, minNum)].filter(
-  (i) => digitSum(i, exp) === BigInt(i)
-)
 
-console.log(
-  matches.join(" + ") +
-    " = " +
-    matches.reduce((sum, val) => BigInt(sum) + BigInt(val), 0)
-)
+for (var i = 10; i <= minNum; i++) {
+  if (digitSum(i, exp) === BigInt(i)) {
+    matches.unshift(i)
+  }
+}
+
+console.log(matches.join(", "))
