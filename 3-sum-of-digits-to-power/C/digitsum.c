@@ -12,8 +12,8 @@ long max_num(int exponent)
     maximum = pow(10, digit) - 1;
     retval = pow(9, exponent) * digit;
     digit++;
-  } while (maximum > retval);
-  return pow(9, exponent) * (digit + 1);
+  } while (maximum < retval);
+  return retval;
 }
 
 int num_of_digits(long num)
