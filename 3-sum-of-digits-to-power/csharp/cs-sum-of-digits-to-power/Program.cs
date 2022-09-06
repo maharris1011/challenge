@@ -10,21 +10,16 @@
 
         public long minNumber()
         {
-            var digit = 2;
-            while (true)
+            var digit = 1;
+            long retval;
+            long maximum;
+            do
             {
-                long largestDigitSum = Convert.ToInt64(Math.Pow(9, _exponent) * digit);
-                long largestXDigitNumber = Convert.ToInt64(Math.Pow(10, digit)) - 1;
-
-                if (largestXDigitNumber > largestDigitSum)
-                {
-                    return largestDigitSum;
-                }
-                else
-                {
-                    digit++;
-                }
-            }
+                digit++;
+                maximum = Convert.ToInt64(Math.Pow(10, digit)) - 1;
+                retval = Convert.ToInt64(Math.Pow(9, _exponent)) * digit;
+            } while (maximum < retval);
+            return retval;
         }
 
         public List<long> ListOfDigits(long num)
