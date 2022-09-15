@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+int digitPower[9];
+
 long max_num(int exponent)
 {
   int digit = 2;
@@ -41,7 +43,8 @@ long sum_digits(long num, int exponent)
   long retval = 0;
   for (int i = 0; i < num_digits; i++)
   {
-    retval += pow(digits[i], exponent);
+    retval += digitPower[digits[i]];
+    // retval += pow(digits[i], exponent);
   }
   free(digits);
   return retval;
@@ -76,7 +79,11 @@ int parse_args(int argc, char **argv)
 int main(int argc, char **argv)
 {
   int exponent = parse_args(argc, argv);
-  long *rgMatchingNumbers = matching_numbers(exponent);
+  for (int i = 0; i < 9; i++)
+  {
+    digitPower[i] = pow(i, exponent);
+  }
+  int long *rgMatchingNumbers = matching_numbers(exponent);
   for (int i = 0; rgMatchingNumbers[i] != 0; i++)
   {
     printf("%lu, ", rgMatchingNumbers[i]);

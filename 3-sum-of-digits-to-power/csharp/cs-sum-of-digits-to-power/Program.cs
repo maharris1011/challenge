@@ -3,9 +3,16 @@
     public class DigitFinder
     {
         private int _exponent;
+        private int[] _squares = new int[10];
+
         public DigitFinder(int exp)
         {
             _exponent = exp;
+
+            for (int i = 0; i < 10; i++)
+            {
+                _squares[i] = Convert.ToInt32(Math.Pow(i, exp));
+            }
         }
 
         public long minNumber()
@@ -39,8 +46,10 @@
         public long SumDigits(long num)
         {
             List<long> digits = ListOfDigits(num);
-            return digits.Aggregate(Convert.ToInt64(0), (acc, x) => acc + Convert.ToInt64(Math.Pow(x, _exponent)));
+            // return digits.Aggregate(Convert.ToInt64(0), (acc, x) => acc + Convert.ToInt64(Math.Pow(x, _exponent)));
+            return digits.Aggregate(Convert.ToInt64(0), (acc, x) => acc + Convert.ToInt64(_squares[x]));
         }
+
 
         public List<long> MatchingNumbers(long maxNum)
         {

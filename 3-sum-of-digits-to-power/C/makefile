@@ -1,7 +1,7 @@
 binary: digitsum 
 	clang digitsum.c -o digitsum 
 
-timer: binary
+test: binary
 	time ./digitsum 3
 	time ./digitsum 4
 	time ./digitsum 5

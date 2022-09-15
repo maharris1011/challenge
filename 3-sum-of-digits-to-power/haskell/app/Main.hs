@@ -2,32 +2,31 @@ module Main where
 import System.Environment
 
 
+-- first sum of exponents where largest n-digit number > sum of 9s to exponent
+maxNumber :: Integer -> Integer
+maxNumber e = maxNumber' 2 9^e 100
+
+maxNumber' :: Integer -> Integer -> Integer -> Integer
+maxNumber' numDigits nineToE accum
+  | (nineToE * numDigits) < (accum - 1) = nineToE * numDigits
+  | otherwise = maxNumber' (numDigits + 1) nineToE (accum * 10)
+
 -- turn integer number into list of integers
 listOfDigits :: Integer -> [Integer]
 listOfDigits x
-  | x < 10 = [x]
-  | otherwise = (x `mod` 10) : listOfDigits (x `div` 10)
+  | x < 10 = [(x)]
+  | otherwise = ((x `mod` 10)) : listOfDigits (x `div` 10)
 
--- first sum of exponents where largest n-digit number > sum of 9s to exponent
-maxNumber :: Integer -> Integer
-maxNumber e = maxNumber' 2 (9^e) (10^2)
-
-maxNumber' :: Integer -> Integer -> Integer -> Integer
-maxNumber' d e accum
-  | e * d < accum = e * d
-  | otherwise = maxNumber' (d+1) e (accum * 10)
-
-digitsToPower :: Integer -> Integer -> [Integer]
-digitsToPower x e = map (^e) (listOfDigits x)
-
-sumOfDigitsToPower :: Integer -> Integer -> Integer
-sumOfDigitsToPower num e = sum $ digitsToPower num e
-
-candidatePairs :: Integer -> [(Integer, Integer)]
-candidatePairs e = [(x, sumOfDigitsToPower x e) | x <- [10..(maxNumber e)]]
+sumOfDigitsToPower :: Integer -> [Integer] -> Integer
+sumOfDigitsToPower num l = 
+  let toPower i = l !! (fromIntegral i)
+      digitsToPower = map (toPower) (listOfDigits num)
+  in sum $ digitsToPower
 
 matchingPairs :: Integer -> [(Integer, Integer)]
-matchingPairs e = [(x, y) | (x, y) <- (candidatePairs e), x == y]
+matchingPairs e = [(x, y) | (x, y) <- candidatePairs, x == y]
+  where l = map (^e) [0..9]
+        candidatePairs = [(x, sumOfDigitsToPower x l) | x <- [10..(maxNumber e)]]
 
 main :: IO ()
 main = do
