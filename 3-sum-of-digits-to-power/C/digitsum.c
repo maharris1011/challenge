@@ -2,68 +2,48 @@
 #include <stdlib.h>
 #include <math.h>
 
-int digitPower[9];
+#define NUM_DIGITS 19
+
+int digits_to_power[9];
+long sum_equal_num[20];
 
 long max_num(int exponent)
 {
   int digit = 2;
-  long retval;
-  long maximum;
-  do
+  long retval = 11;
+  long maximum = 10;
+  long nine_to_the_exponent = pow(9, exponent);
+  while ((maximum - 1) < retval)
   {
-    maximum = pow(10, digit) - 1;
-    retval = pow(9, exponent) * digit;
-    digit++;
-  } while (maximum < retval);
-  return retval;
-}
-
-int num_of_digits(long num)
-{
-  return floor(log10(num)) + 1;
-}
-
-int *list_of_digits(long num)
-{
-  int num_digits = num_of_digits(num);
-  int *retval = malloc(num_digits * sizeof(int));
-  int index = 0;
-  for (int i = 0; i < num_digits; i++)
-  {
-    retval[i] = num % 10;
-    num = num / 10;
+    maximum *= 10;
+    retval = nine_to_the_exponent * digit++;
   }
   return retval;
 }
 
 long sum_digits(long num, int exponent)
 {
-  int *digits = list_of_digits(num);
-  int num_digits = num_of_digits(num);
   long retval = 0;
-  for (int i = 0; i < num_digits; i++)
+  long full_num = num;
+  while (full_num != 0)
   {
-    retval += digitPower[digits[i]];
-    // retval += pow(digits[i], exponent);
+    retval += digits_to_power[(full_num % 10)];
+    full_num /= 10;
   }
-  free(digits);
   return retval;
 }
 
 long *matching_numbers(int exponent)
 {
-  long *sumEqualNum = malloc(20 * sizeof(long));
   long max = max_num(exponent);
-  int idx = 0;
   for (long i = 10; i < max; i++)
   {
     if (i == sum_digits(i, exponent))
     {
-      sumEqualNum[idx++] = i;
+      printf("%ld, ", i);
     }
   }
-  sumEqualNum[idx] = 0;
-  return sumEqualNum;
+  return sum_equal_num;
 }
 
 int parse_args(int argc, char **argv)
@@ -79,15 +59,12 @@ int parse_args(int argc, char **argv)
 int main(int argc, char **argv)
 {
   int exponent = parse_args(argc, argv);
-  for (int i = 0; i < 9; i++)
+  for (int i = 0; i <= 9; i++)
   {
-    digitPower[i] = pow(i, exponent);
+    digits_to_power[i] = pow(i, exponent);
   }
-  int long *rgMatchingNumbers = matching_numbers(exponent);
-  for (int i = 0; rgMatchingNumbers[i] != 0; i++)
-  {
-    printf("%lu, ", rgMatchingNumbers[i]);
-  }
+  printf("%d: ", exponent);
+  matching_numbers(exponent);
   printf("\n");
   return 0;
 }

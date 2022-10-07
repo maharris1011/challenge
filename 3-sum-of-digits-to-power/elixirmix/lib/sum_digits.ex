@@ -19,7 +19,7 @@ defmodule SumDigits do
   def number_to_list_of_digits(n) do
     case n do
       n when n < 10 -> [n]
-      _ -> number_to_list_of_digits(div(n, 10)) ++ [rem(n, 10)]
+      _ -> [rem(n,10) | number_to_list_of_digits(div(n, 10))]
     end
   end
 
@@ -37,10 +37,9 @@ defmodule SumDigits do
     max_number(2, e)
   end
 
-  def sum_of_digits_to_power(n, e) do
+  def sum_of_digits_to_power(squares, n) do
     number_to_list_of_digits(n)
-    |> Enum.map(fn n -> :math.pow(n, e) end)
-    |> Enum.reduce(0, fn n, acc -> acc + n end)
+    |> Enum.reduce(0, fn n, acc -> acc + squares[n] end)
   end
 
   def main(args) do
@@ -48,9 +47,10 @@ defmodule SumDigits do
     {opts,_,_}= OptionParser.parse(args, options)
     power = opts[:power]
 
+    squares = Enum.to_list(0..9).map(fn n -> :math.pow(n, power) end)
     candidates = 10..SumDigits.max_number(power)
     sum_matches_number = Stream.filter(candidates, 
-      fn(n) -> SumDigits.sum_of_digits_to_power(n, power) == n end)
+      fn(n) -> SumDigits.sum_of_digits_to_power(squares, n) == n end)
 
     IO.inspect Enum.to_list(sum_matches_number)
   end

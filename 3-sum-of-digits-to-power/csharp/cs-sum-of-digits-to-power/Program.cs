@@ -17,37 +17,30 @@
 
         public long minNumber()
         {
-            var digit = 1;
-            long retval;
-            long maximum;
-            do
+            var digit = 2;
+            long retval = 11;
+            long maximum = 10;
+            long nineToTheExponent = Convert.ToInt64(Math.Pow(9, _exponent));
+            while ((maximum - 1) < retval)
             {
-                digit++;
-                maximum = Convert.ToInt64(Math.Pow(10, digit)) - 1;
-                retval = Convert.ToInt64(Math.Pow(9, _exponent)) * digit;
-            } while (maximum < retval);
+                maximum = maximum * 10;
+                retval = nineToTheExponent * digit;
+                digit += 1;
+            }
             return retval;
         }
 
-        public List<long> ListOfDigits(long num)
-        {
-            List<long> retval = new List<long>();
-            long lastDigit = num % 10;
-            long remainder = num / 10;
-            while (remainder > 0)
-            {
-                retval.Add(lastDigit);
-                lastDigit = remainder % 10;
-                remainder = remainder / 10;
-            }
-            retval.Add(lastDigit);
-            return retval;
-        }
         public long SumDigits(long num)
         {
-            List<long> digits = ListOfDigits(num);
-            // return digits.Aggregate(Convert.ToInt64(0), (acc, x) => acc + Convert.ToInt64(Math.Pow(x, _exponent)));
-            return digits.Aggregate(Convert.ToInt64(0), (acc, x) => acc + Convert.ToInt64(_squares[x]));
+            long retval = 0;
+            long number = num;
+            long remainder = num % 10;
+            while (number != 0)
+            {
+                retval += _squares[(number % 10)];
+                number = number / 10;
+            }
+            return retval;
         }
 
 
@@ -58,6 +51,7 @@
             {
                 if (i == SumDigits(i))
                 {
+                    Console.Write(i + ", ");
                     retval.Add(i);
                 }
             }
@@ -75,7 +69,9 @@
             }
             DigitFinder df = new DigitFinder(exponent);
             long minNum = df.minNumber();
-            Console.WriteLine(String.Join(", ", df.MatchingNumbers(minNum)));
+            Console.Write(minNum + ": " + exponent + ": ");
+            df.MatchingNumbers(minNum);
+            Console.WriteLine("");
         }
     }
 }

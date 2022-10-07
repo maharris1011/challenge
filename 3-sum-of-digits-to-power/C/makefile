@@ -2,9 +2,8 @@ binary: digitsum
 	clang digitsum.c -o digitsum 
 
 test: binary
-	time ./digitsum 3
-	time ./digitsum 4
-	time ./digitsum 5
-	time ./digitsum 6
-	time ./digitsum 7
-	time ./digitsum 8
+	./digitsum 3; \
+	for i in 3 4 5 6 7 8; \
+	do \
+		time ./digitsum $$i; \
+	done

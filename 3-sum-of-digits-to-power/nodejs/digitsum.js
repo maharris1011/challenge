@@ -1,4 +1,5 @@
 var squares = null
+var nineToTheExponent = 0
 
 let digitSum = (x, n) => {
   return x
@@ -9,7 +10,7 @@ let digitSum = (x, n) => {
 }
 
 let minNumber = (d, n) => {
-  let maxNum = BigInt(9 ** n * d)
+  let maxNum = BigInt(nineToTheExponent * d)
   if (BigInt(10 ** d - 1) > maxNum) {
     return maxNum
   } else {
@@ -21,6 +22,7 @@ const myArgs = process.argv.slice(2)
 
 let exp = myArgs[0] || 5
 squares = [...Array(10).keys()].map((x) => x ** exp)
+nineToTheExponent = 9 ** exp
 var matches = []
 let minNum = minNumber(2, exp)
 
@@ -30,4 +32,4 @@ for (var i = 10; i <= minNum; i++) {
   }
 }
 
-console.log(matches.join(", "))
+console.log(`${exp}: ${matches.join(", ")}`)
