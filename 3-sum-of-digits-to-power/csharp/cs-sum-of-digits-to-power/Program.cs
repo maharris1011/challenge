@@ -21,7 +21,7 @@
             long retval = 11;
             long maximum = 10;
             long nineToTheExponent = Convert.ToInt64(Math.Pow(9, _exponent));
-            while ((maximum - 1) < retval)
+            while (maximum < retval)
             {
                 maximum = maximum * 10;
                 retval = nineToTheExponent * digit;
