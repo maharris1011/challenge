@@ -5,15 +5,15 @@
 #define NUM_DIGITS 19
 
 int digits_to_power[9];
-long sum_equal_num[20];
+unsigned long sum_equal_num[20];
 
-long max_num(int exponent)
+unsigned long max_num(int exponent)
 {
   int digit = 2;
-  long retval = 11;
-  long maximum = 10;
-  long nine_to_the_exponent = pow(9, exponent);
-  while ((maximum - 1) < retval)
+  unsigned long retval = 11;
+  unsigned long maximum = 10;
+  unsigned long nine_to_the_exponent = pow(9, exponent);
+  while (maximum < retval)
   {
     maximum *= 10;
     retval = nine_to_the_exponent * digit++;
@@ -21,10 +21,10 @@ long max_num(int exponent)
   return retval;
 }
 
-long sum_digits(long num, int exponent)
+unsigned long sum_digits(unsigned long num, int exponent)
 {
-  long retval = 0;
-  long full_num = num;
+  unsigned long retval = 0;
+  unsigned long full_num = num;
   while (full_num != 0)
   {
     retval += digits_to_power[(full_num % 10)];
@@ -33,10 +33,10 @@ long sum_digits(long num, int exponent)
   return retval;
 }
 
-long *matching_numbers(int exponent)
+unsigned long *matching_numbers(int exponent)
 {
-  long max = max_num(exponent);
-  for (long i = 10; i < max; i++)
+  unsigned long max = max_num(exponent);
+  for (unsigned long i = 10; i < max; i++)
   {
     if (i == sum_digits(i, exponent))
     {
