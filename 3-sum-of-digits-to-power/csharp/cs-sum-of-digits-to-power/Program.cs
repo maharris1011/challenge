@@ -3,7 +3,7 @@
     public class DigitFinder
     {
         private int _exponent;
-        private int[] _squares = new int[10];
+        private ulong[] _squares = new ulong[10];
 
         public DigitFinder(int exp)
         {
@@ -11,43 +11,51 @@
 
             for (int i = 0; i < 10; i++)
             {
-                _squares[i] = Convert.ToInt32(Math.Pow(i, exp));
+                _squares[i] = (ulong)Convert.ToInt64(Math.Pow(i, exp));
             }
         }
 
-        public long minNumber()
+        public ulong minNumber()
         {
             var digit = 2;
-            long retval = 11;
-            long maximum = 10;
-            long nineToTheExponent = Convert.ToInt64(Math.Pow(9, _exponent));
+            ulong retval = 11;
+            ulong maximum = 10;
+            ulong nineToTheExponent = (ulong)Convert.ToInt64(Math.Pow(9, _exponent));
             while (maximum < retval)
             {
                 maximum = maximum * 10;
-                retval = nineToTheExponent * digit;
+                retval = nineToTheExponent * (ulong)digit;
                 digit += 1;
             }
             return retval;
         }
 
-        public long SumDigits(long num)
+        public ulong SumDigits(ulong num)
         {
-            long retval = 0;
-            long number = num;
-            long remainder = num % 10;
+            ulong retval = 0;
+            ulong number = num;
+            ulong remainder = num % 10;
             while (number != 0)
             {
-                retval += _squares[(number % 10)];
-                number = number / 10;
+                try
+                {
+                    retval += _squares[(number % 10)];
+                    number = number / 10;
+                }
+                catch (IndexOutOfRangeException e)
+                {
+                    Console.WriteLine($"num % 10 = {num % 10}");
+                    Console.WriteLine(e.Message);
+                }
             }
             return retval;
         }
 
 
-        public List<long> MatchingNumbers(long maxNum)
+        public List<ulong> MatchingNumbers(ulong maxNum)
         {
-            List<long> retval = new List<long>();
-            for (int i = 10; i <= maxNum; i++)
+            List<ulong> retval = new List<ulong>();
+            for (ulong i = 10; i <= maxNum; i++)
             {
                 if (i == SumDigits(i))
                 {
@@ -68,7 +76,7 @@
                 exponent = int.Parse(args[0]);
             }
             DigitFinder df = new DigitFinder(exponent);
-            long minNum = df.minNumber();
+            ulong minNum = df.minNumber();
             Console.Write(minNum + ": " + exponent + ": ");
             df.MatchingNumbers(minNum);
             Console.WriteLine("");
