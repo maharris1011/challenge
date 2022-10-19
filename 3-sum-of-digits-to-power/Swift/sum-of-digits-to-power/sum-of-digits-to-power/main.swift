@@ -14,8 +14,7 @@ if (CommandLine.arguments.count > 1) {
     exponent = Int(atoi(CommandLine.arguments[1]));
 }
 
-let digits = [0,1,2,3,4,5,6,7,8,9];
-let digitsPowerTable = (digits.map { num in
+let digitsPowerTable = ([0,1,2,3,4,5,6,7,8,9].map { num in
     return pow(Decimal(num), exponent);
 })
 
