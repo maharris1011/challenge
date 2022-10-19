@@ -23,18 +23,19 @@ defmodule SumDigits do
     end
   end
 
-  def max_number(d, e) do
+  def max_number(d, e, maxInt, nineToE) do
+    highNines = nineToE * d
     cond do
-      :math.pow(10, d) - 1 > :math.pow(9, e) * d ->
-        trunc(:math.pow(9, e) * d)
+      (maxInt - 1) > (highNines) ->
+        trunc(highNines)
 
       true ->
-        trunc(max_number(d + 1, e))
+        trunc(max_number(d + 1, e, maxInt * 10, nineToE))
     end
   end
 
   def max_number(e) do
-    max_number(2, e)
+    max_number(2, e, 10, :math.pow(9, e))
   end
 
   def sum_of_digits_to_power(squares, n) do

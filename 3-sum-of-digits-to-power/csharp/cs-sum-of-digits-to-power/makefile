@@ -1,5 +1,5 @@
 binary: bin/release/net6.0/osx-x64/publish/cs-sum-of-digits-to-power
-	dotnet publish -c release -r osx-x64
+	dotnet publish --self-contained -c release -r osx-x64
 
 test: binary
 	bin/release/net6.0/osx-x64/publish/cs-sum-of-digits-to-power 3; \

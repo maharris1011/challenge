@@ -4,7 +4,7 @@ defmodule SumDigits do
   end
 
   def number_to_list_of_digits(n) do 
-    number_to_list_of_digits(div(n, 10)) ++ [rem(n, 10)]
+    [rem(n, 10) | number_to_list_of_digits(div(n, 10))]
   end
 
   def max_number(d, maxD, e) do
@@ -28,7 +28,7 @@ defmodule SumDigits do
 
 end
 
-power = 6
+power = 5
 candidates = 10..SumDigits.max_number(power)
 sum_matches_number =
   for n <- candidates, SumDigits.sum_of_digits_to_power(n, power) == n do
