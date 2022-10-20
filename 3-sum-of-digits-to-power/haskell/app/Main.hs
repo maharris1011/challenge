@@ -4,7 +4,7 @@ import System.Environment
 
 -- first sum of exponents where largest n-digit number > sum of 9s to exponent
 maxNumber :: Integer -> Integer
-maxNumber e = maxNumber' 2 9^e 100
+maxNumber e = maxNumber' 2 (9^e) 100
 
 maxNumber' :: Integer -> Integer -> Integer -> Integer
 maxNumber' numDigits nineToE accum
