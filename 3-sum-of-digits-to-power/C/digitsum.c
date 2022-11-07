@@ -23,12 +23,18 @@ unsigned long max_num(int exponent)
 
 unsigned long sum_digits(unsigned long num, int exponent)
 {
+  if (num < 10)
+  {
+    cache[num] = pow(num, exponent);
+    return cache[num];
+  }
   unsigned long remainder = num;
   unsigned long sum_of_digits_to_power = 0;
   while (remainder != 0 && cache[remainder] == 0)
   {
     unsigned long digit = remainder % 10;
     remainder /= 10;
+    cache[digit] = (cache[digit] == 0) ? pow(digit, exponent) : cache[digit];
     sum_of_digits_to_power += cache[digit];
   }
   cache[num] = cache[remainder] + sum_of_digits_to_power;
@@ -38,13 +44,8 @@ unsigned long sum_digits(unsigned long num, int exponent)
 void matching_numbers(int exponent)
 {
   unsigned long max = max_num(exponent);
-  // warm the cache with 0..9
-  for (unsigned long j = 0; j < 10; j++)
-  {
-    cache[j] = pow(j, exponent);
-  }
   unsigned long step = 10000;
-  for (unsigned long j = 11; j < step; j++)
+  for (unsigned long j = 0; j < step; j++)
   {
     cache[j] = sum_digits(j, exponent);
   }
