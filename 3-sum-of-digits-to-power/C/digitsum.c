@@ -44,13 +44,13 @@ unsigned long sum_digits(unsigned long num, int exponent)
 void matching_numbers(int exponent)
 {
   unsigned long max = max_num(exponent);
-  unsigned long step = 10000;
+  unsigned long step = 100000;
   for (unsigned long j = 0; j < step; j++)
   {
     cache[j] = sum_digits(j, exponent);
   }
   // find matching numbers from 10..max
-  for (unsigned long i = step; i < max; i += step)
+  for (unsigned long i = 0; i < max; i += step)
   {
     unsigned long base_sum = sum_digits(i, exponent);
     for (unsigned long j = 1; j < step; j++)
