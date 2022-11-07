@@ -1,49 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
-#define NUM_DIGITS 19
-
-int digits_to_power[9];
-unsigned long sum_equal_num[20];
+unsigned long digits_to_power[9];
+unsigned long cache[99999999999];
 
 unsigned long max_num(int exponent)
 {
   int digit = 2;
-  unsigned long retval = 11;
+  unsigned long max_digit_sum = 11;
   unsigned long maximum = 10;
   unsigned long nine_to_the_exponent = pow(9, exponent);
-  while (maximum < retval)
+  while (maximum < max_digit_sum)
   {
     maximum *= 10;
-    retval = nine_to_the_exponent * digit++;
+    max_digit_sum = nine_to_the_exponent * digit;
+    digit++;
   }
-  return retval;
+  return max_digit_sum;
 }
 
 unsigned long sum_digits(unsigned long num, int exponent)
 {
-  unsigned long retval = 0;
-  unsigned long full_num = num;
-  while (full_num != 0)
+  unsigned long remainder = num;
+  unsigned long sum_of_digits_to_power = 0;
+  while (remainder != 0 && cache[remainder] == 0)
   {
-    retval += digits_to_power[(full_num % 10)];
-    full_num /= 10;
+    unsigned long digit = remainder % 10;
+    remainder /= 10;
+    sum_of_digits_to_power += cache[digit];
   }
-  return retval;
+  cache[num] = cache[remainder] + sum_of_digits_to_power;
+  return cache[num];
 }
 
-unsigned long *matching_numbers(int exponent)
+void matching_numbers(int exponent)
 {
   unsigned long max = max_num(exponent);
-  for (unsigned long i = 10; i < max; i++)
+  // warm the cache with 0..9
+  for (unsigned long j = 0; j < 10; j++)
   {
-    if (i == sum_digits(i, exponent))
+    cache[j] = pow(j, exponent);
+  }
+  unsigned long step = 10000;
+  for (unsigned long j = 11; j < step; j++)
+  {
+    cache[j] = sum_digits(j, exponent);
+  }
+  // find matching numbers from 10..max
+  for (unsigned long i = step; i < max; i += step)
+  {
+    unsigned long base_sum = sum_digits(i, exponent);
+    for (unsigned long j = 1; j < step; j++)
     {
-      printf("%ld, ", i);
+      if ((j + i) == base_sum + cache[j])
+      {
+        printf("%ld, ", (j + i));
+      }
     }
   }
-  return sum_equal_num;
 }
 
 int parse_args(int argc, char **argv)
@@ -59,10 +75,6 @@ int parse_args(int argc, char **argv)
 int main(int argc, char **argv)
 {
   int exponent = parse_args(argc, argv);
-  for (int i = 0; i <= 9; i++)
-  {
-    digits_to_power[i] = pow(i, exponent);
-  }
   printf("%d: ", exponent);
   matching_numbers(exponent);
   printf("\n");

@@ -18,16 +18,16 @@
         public ulong minNumber()
         {
             var digit = 2;
-            ulong retval = 11;
+            ulong maxDigitSum = 11;
             ulong maximum = 10;
             ulong nineToTheExponent = (ulong)Convert.ToInt64(Math.Pow(9, _exponent));
-            while (maximum < retval)
+            while (maximum < maxDigitSum)
             {
                 maximum = maximum * 10;
-                retval = nineToTheExponent * (ulong)digit;
+                maxDigitSum = nineToTheExponent * (ulong)digit;
                 digit += 1;
             }
-            return retval;
+            return maxDigitSum;
         }
 
         public ulong SumDigits(ulong num)
@@ -52,18 +52,21 @@
         }
 
 
-        public List<ulong> MatchingNumbers(ulong maxNum)
+        public void MatchingNumbers(ulong maxNum)
         {
-            List<ulong> retval = new List<ulong>();
-            for (ulong i = 10; i <= maxNum; i++)
+            for (ulong i = 10; i <= maxNum; i += 10)
             {
-                if (i == SumDigits(i))
+                ulong base_sum = SumDigits(i);
+                ulong num = i;
+                for (ulong j = 0; j < 10; j++)
                 {
-                    Console.Write(i + ", ");
-                    retval.Add(i);
+                    if (num == (base_sum + _squares[j]))
+                    {
+                        Console.Write($"{num}, ");
+                    }
+                    num += 1;
                 }
             }
-            return retval;
         }
     }
     class Program
