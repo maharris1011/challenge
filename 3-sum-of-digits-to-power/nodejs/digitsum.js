@@ -1,24 +1,5 @@
-let memoizedDigitSum = (exp) => {
-  let cache = {}
-  let squares = [...Array(10).keys()].map((x) => x ** exp)
-
-  let digitSum = (x) => {
-    if (x == 0) return 0
-    if (x == 1) return 1
-    arr = x.toString().split("").sort()
-    str = arr.join()
-    if (str in cache) {
-      return cache[str]
-    }
-    cache[str] = cache[arr.pop()] + digitSum(arr.join())
-    return cache[x]
-  }
-
-  return digitSum
-}
-
 let digitSum = (exp) => {
-  squares = [...Array(10).keys()].map((x) => x ** exp)
+  let squares = [...Array(10).keys()].map((x) => x ** exp)
 
   let ds = (x) => {
     return x
@@ -31,25 +12,33 @@ let digitSum = (exp) => {
 
 let memoizedMinNumber = (exp) => {
   let nineToTheExponent = 9 ** exp
-
-  let minNumber = (d) => {
-    let maxNum = BigInt(nineToTheExponent * d)
-    if (BigInt(10 ** d - 1) > maxNum) {
-      return maxNum
-    } else {
-      return minNumber(d + 1)
-    }
+  let digits = [2, 3, 4, 5, 6, 7, 8, 9]
+  let digitsToTen = [
+    100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
+  ]
+  let minNumber = () => {
+    let arr = digits.map((x) => [
+      BigInt(digitsToTen[x - 2]) - BigInt(1),
+      BigInt(nineToTheExponent * x)
+    ])
+    let firstPair = arr.filter((val) => val[0] > val[1])
+    return firstPair[0][1]
   }
-
   return minNumber
 }
 
 let findMatches = (min, max, exp) => {
   var matches = []
-  const ds = memoizedDigitSum(exp)
-  for (var i = min; i <= max; i++) {
-    if (ds(i) === BigInt(i)) {
-      matches.unshift(i)
+  let squares = [...Array(10).keys()].map((x) => x ** exp)
+  const ds = digitSum(exp)
+  var i = BigInt(10)
+  for (i = i; i <= max; i += BigInt(10)) {
+    var baseSum = ds(i)
+    for (var j = 0; j < 10; j++) {
+      var num = BigInt(i) + BigInt(j)
+      if (num === BigInt(baseSum + BigInt(squares[j]))) {
+        matches.unshift(num)
+      }
     }
   }
   return matches
@@ -60,6 +49,7 @@ const myArgs = process.argv.slice(2)
 let exp = myArgs[0] || 5
 
 const minNumber = memoizedMinNumber(exp)
-let minNum = minNumber(2)
+let minNum = minNumber(10, 2)
+console.log(`minNum = ${minNum}`)
 let matches = findMatches(10, minNum, exp)
 console.log(`${exp}: ${matches.join(", ")}`)
