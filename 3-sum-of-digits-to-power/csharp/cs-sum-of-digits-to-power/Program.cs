@@ -3,15 +3,15 @@
     public class DigitFinder
     {
         private int _exponent;
-        private ulong[] _squares = new ulong[10];
+        private Dictionary<ulong, ulong> _cache = new Dictionary<ulong, ulong>();
 
         public DigitFinder(int exp)
         {
             _exponent = exp;
 
-            for (int i = 0; i < 10; i++)
+            for (ulong i = 0; i < 10; i++)
             {
-                _squares[i] = (ulong)Convert.ToInt64(Math.Pow(i, exp));
+                _cache[i] = (ulong)Convert.ToInt64(Math.Pow(i, exp));
             }
         }
 
@@ -32,15 +32,16 @@
 
         public ulong SumDigits(ulong num)
         {
-            ulong retval = 0;
+            ulong digitSum = 0;
             ulong number = num;
-            ulong remainder = num % 10;
-            while (number != 0)
+            ulong cachedSum = 0;
+            while (number != 0 && (false == _cache.TryGetValue(number, out cachedSum)))
             {
                 try
                 {
-                    retval += _squares[(number % 10)];
+                    ulong digit = number % 10;
                     number = number / 10;
+                    digitSum += _cache[digit];
                 }
                 catch (IndexOutOfRangeException e)
                 {
@@ -48,7 +49,8 @@
                     Console.WriteLine(e.Message);
                 }
             }
-            return retval;
+            _cache[num] = digitSum + _cache[number];
+            return _cache[num];
         }
 
 
@@ -57,14 +59,12 @@
             for (ulong i = 10; i <= maxNum; i += 10)
             {
                 ulong base_sum = SumDigits(i);
-                ulong num = i;
                 for (ulong j = 0; j < 10; j++)
                 {
-                    if (num == (base_sum + _squares[j]))
+                    if ((i + j) == (base_sum + _cache[j]))
                     {
-                        Console.Write($"{num}, ");
+                        Console.Write($"{(i + j)}, ");
                     }
-                    num += 1;
                 }
             }
         }
