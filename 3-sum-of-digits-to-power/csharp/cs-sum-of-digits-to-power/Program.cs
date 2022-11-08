@@ -3,11 +3,13 @@
     public class DigitFinder
     {
         private int _exponent;
+        private ulong _nineToTheExponent;
         private Dictionary<ulong, ulong> _cache = new Dictionary<ulong, ulong>();
 
         public DigitFinder(int exp)
         {
             _exponent = exp;
+            _nineToTheExponent = (ulong)Convert.ToInt64(Math.Pow(9, _exponent));
 
             for (ulong i = 0; i < 10; i++)
             {
@@ -18,13 +20,12 @@
         public ulong minNumber()
         {
             var digit = 2;
-            ulong maxDigitSum = 11;
+            ulong maxDigitSum = _nineToTheExponent * (ulong)digit;
             ulong maximum = 10;
-            ulong nineToTheExponent = (ulong)Convert.ToInt64(Math.Pow(9, _exponent));
             while (maximum < maxDigitSum)
             {
                 maximum = maximum * 10;
-                maxDigitSum = nineToTheExponent * (ulong)digit;
+                maxDigitSum = _nineToTheExponent * (ulong)digit;
                 digit += 1;
             }
             return maxDigitSum;
@@ -56,10 +57,10 @@
 
         public void MatchingNumbers(ulong maxNum)
         {
-            for (ulong i = 10; i <= maxNum; i += 10)
+            for (ulong i = 10; i <= (maxNum + 100); i += 100)
             {
                 ulong base_sum = SumDigits(i);
-                for (ulong j = 0; j < 10; j++)
+                for (ulong j = 0; j < 100; j++)
                 {
                     if ((i + j) == (base_sum + _cache[j]))
                     {
