@@ -1,6 +1,8 @@
 ﻿open System
 
 module SumOfDigits =
+    let cache = new System.Collections.Generic.Dictionary<_, _>()
+
     let findMatchesOfPower (exponent: int) =
         let digitsToPower = [ for i in 0UL .. 9UL -> uint64 (float i ** exponent) ]
 
@@ -12,26 +14,31 @@ module SumOfDigits =
             | (var1, var2) when var1 > var2 -> var2
             | otherwise -> maxNumber (digit + 1)
 
-        let rec listOfDigits (x: uint64) =
-            match x with
-            | (var1) when var1 < 10UL -> [ var1 ]
-            | otherwise -> [ (x % 10UL) ] @ listOfDigits (x / 10UL)
+        let rec sumDigitsToPower (x: uint64) =
+            match cache.TryGetValue x with
+            | true, v -> v
+            | false, _ ->
+                let v =
+                    match x with
+                    | (var1) when var1 < 10UL -> digitsToPower[int var1]
+                    | otherwise ->
+                        sumDigitsToPower (x / 10UL)
+                        + digitsToPower[int (x % 10UL)]
 
-        let sumDigitsToPower (x: uint64) =
-            listOfDigits (x)
-            |> List.sumBy (fun digit -> digitsToPower[int digit])
+                cache.Add(x, v)
+                v
 
         let topOfRange = maxNumber (2)
         let candidates = [ 10UL .. 10UL .. topOfRange ]
 
-        let memoSumDigitsToPower (x: uint64) =
+        let byTenSumDigitsToPower (x: uint64) =
             let baseSum = sumDigitsToPower (x)
 
             for digit in 0UL .. 9UL do
                 if (x + digit) = (baseSum + digitsToPower[int digit]) then
                     printf "%u, " (x + uint64 digit)
 
-        candidates |> List.map memoSumDigitsToPower
+        candidates |> List.map byTenSumDigitsToPower
 
 [<EntryPoint>]
 let main args =
