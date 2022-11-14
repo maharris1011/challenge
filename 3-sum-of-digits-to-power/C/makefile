@@ -1,5 +1,5 @@
-binary: digitsum 
-	clang digitsum.c -o digitsum 
+binary: digitsum
+	clang digitsum.c -o digitsum
 
 test: binary
 	./digitsum 3; \

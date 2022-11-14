@@ -4,7 +4,7 @@
 #include <limits.h>
 
 unsigned long digits_to_power[9];
-unsigned long cache[99999999999];
+unsigned long cache[10];
 
 unsigned long max_num(int exponent)
 {
@@ -23,41 +23,35 @@ unsigned long max_num(int exponent)
 
 unsigned long sum_digits(unsigned long num, int exponent)
 {
-  if (num < 10)
-  {
-    cache[num] = pow(num, exponent);
-    return cache[num];
-  }
   unsigned long remainder = num;
   unsigned long sum_of_digits_to_power = 0;
-  while (remainder != 0 && cache[remainder] == 0)
+  while (remainder != 0)
   {
     unsigned long digit = remainder % 10;
     remainder /= 10;
-    cache[digit] = (cache[digit] == 0) ? pow(digit, exponent) : cache[digit];
     sum_of_digits_to_power += cache[digit];
   }
-  cache[num] = cache[remainder] + sum_of_digits_to_power;
-  return cache[num];
+  return sum_of_digits_to_power;
 }
 
 void matching_numbers(int exponent)
 {
   unsigned long max = max_num(exponent);
-  unsigned long step = 100000;
-  for (unsigned long j = 0; j < step; j++)
+  unsigned long step = 10;
+  for (int j = 0; j < step; j++)
   {
-    cache[j] = sum_digits(j, exponent);
+    cache[j] = pow(j, exponent);
   }
   // find matching numbers from 10..max
-  for (unsigned long i = 0; i < max; i += step)
+  for (unsigned long i = 10; i < (max + step); i += step)
   {
     unsigned long base_sum = sum_digits(i, exponent);
-    for (unsigned long j = 1; j < step; j++)
+    for (unsigned long j = 0; j < step; j++)
     {
-      if ((j + i) == base_sum + cache[j])
+      unsigned long num = j + i;
+      if (num == (base_sum + cache[j]))
       {
-        printf("%ld, ", (j + i));
+        printf("%ld, ", num);
       }
     }
   }
@@ -76,7 +70,8 @@ int parse_args(int argc, char **argv)
 int main(int argc, char **argv)
 {
   int exponent = parse_args(argc, argv);
-  printf("%d: ", exponent);
+  unsigned long maxnum = max_num(exponent);
+  printf("%d: %lu:  ", exponent, maxnum);
   matching_numbers(exponent);
   printf("\n");
   return 0;
