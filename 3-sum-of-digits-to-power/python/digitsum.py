@@ -1,11 +1,13 @@
 import sys
 import getopt
 
+cache = {}
+
 
 def max_num(exponent):
     digit = 2
     maximum = 10
-    max_digit_sum = sum_digits(99, exponent)
+    max_digit_sum = sum_digits(99)
     nine_to_the_exponent = pow(9, exponent)
     while (maximum - 1) < max_digit_sum:
         maximum *= 10
@@ -14,11 +16,18 @@ def max_num(exponent):
     return max_digit_sum
 
 
-def sum_digits(num, exponent):
+def sum_digits_rec(num):
+    if num in cache:
+        return cache[num]
+    cache[num] = sum_digits_rec(num // 10) + cache[num % 10]
+    return cache[num]
+
+
+def sum_digits(num):
     total = 0
     while num > 0:
         digit = num % 10
-        total += pow(digit, exponent)
+        total += cache[digit]
         num = num // 10
     return total
 
@@ -26,12 +35,9 @@ def sum_digits(num, exponent):
 def matching_numbers(maxnum, exponent):
     step = 10
     numlist = []
-    cache = []
-    for x in range(10):
-        cache.append(pow(x, exponent))
     # find matching numbers from 10..maxnum
     for num in range(10, maxnum + step, step):
-        base_sum = sum_digits(num, exponent)
+        base_sum = sum_digits_rec(num)
         for j in range(10):
             if (base_sum + cache[j]) == (j + num):
                 numlist.append(j + num)
@@ -52,6 +58,8 @@ def main(argv):
         elif opt in ("-p", "--power"):
             print('arg = ', arg)
             exponent = int(arg)
+    for x in range(10):
+        cache[x] = pow(x, exponent)
     maxnum = max_num(exponent)
     matching = matching_numbers(maxnum, exponent)
     print(exponent, ":", maxnum, ": ", matching)
