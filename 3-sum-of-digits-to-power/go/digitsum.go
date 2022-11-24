@@ -50,7 +50,7 @@ func matching_numbers(exponent int) {
 	var i int64 = 10
 	for i < max {
 		base_sum := sum_digits(i, exponent)
-		go find_matches(base_sum, i)
+		find_matches(base_sum, i)
 		i += 10
 	}
 }

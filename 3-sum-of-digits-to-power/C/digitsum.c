@@ -23,15 +23,12 @@ unsigned long max_num(int exponent)
 
 unsigned long sum_digits(unsigned long num, int exponent)
 {
-  unsigned long remainder = num;
-  unsigned long sum_of_digits_to_power = 0;
-  while (remainder != 0)
+  unsigned long sum = 0;
+  for (; num != 0; num /= 10)
   {
-    unsigned long digit = remainder % 10;
-    remainder /= 10;
-    sum_of_digits_to_power += cache[digit];
+    sum += cache[num % 10];
   }
-  return sum_of_digits_to_power;
+  return sum;
 }
 
 void matching_numbers(int exponent)
