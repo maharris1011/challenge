@@ -69,6 +69,21 @@
                 }
             }
         }
+
+        public IEnumerable<ulong> ProduceMatchingNumbers(ulong maxNum)
+        {
+            for (ulong i = 10; i <= (maxNum + 10); i += 10)
+            {
+                ulong base_sum = SumDigits(i);
+                for (ulong j = 0; j < 10; j++)
+                {
+                    if ((i + j) == (base_sum + _cache[j]))
+                    {
+                        yield return (i + j);
+                    }
+                }
+            }
+        }
     }
     class Program
     {
@@ -82,7 +97,11 @@
             DigitFinder df = new DigitFinder(exponent);
             ulong minNum = df.minNumber();
             Console.Write(minNum + ": " + exponent + ": ");
-            df.MatchingNumbers(minNum);
+            foreach (ulong num in df.ProduceMatchingNumbers(minNum))
+            {
+                Console.Write(num + ", ");
+            }
+            // df.MatchingNumbers(minNum);
             Console.WriteLine("");
         }
     }

@@ -1,4 +1,4 @@
-bin/release/net7.0/osx-arm64/publish/cs-sum-of-digits-to-power:
+bin/release/net7.0/osx-arm64/publish/cs-sum-of-digits-to-power: Program.cs
 	dotnet publish --self-contained -c release -r osx-arm64
 
 binary: bin/release/net7.0/osx-arm64/publish/cs-sum-of-digits-to-power
