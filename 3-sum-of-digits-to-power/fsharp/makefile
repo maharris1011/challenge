@@ -1,4 +1,4 @@
-bin/release/net7.0/osx-arm64/publish/fs-sum-of-digits-to-power:
+bin/release/net7.0/osx-arm64/publish/fs-sum-of-digits-to-power: Program.fs
 	dotnet publish -c release --self-contained -r osx-arm64
 
 binary: bin/release/net7.0/osx-arm64/publish/fs-sum-of-digits-to-power

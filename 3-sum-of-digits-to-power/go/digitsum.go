@@ -4,14 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"strconv"
 )
 
 var cache [10]int64
 
-func max_num(exponent int) int64 {
-	var max_digit_sum int64 = int64(math.Pow(9, float64(exponent)))
+func max_num(exponent float64) int64 {
+	var max_digit_sum int64 = int64(math.Pow(9, exponent))
 	var maximum int64 = 10
-	nine_to_the_exponent := math.Pow(9, float64(exponent))
+	nine_to_the_exponent := math.Pow(9, exponent)
 	for digit := 2; maximum-1 < max_digit_sum; digit++ {
 		maximum *= 10
 		max_digit_sum = int64(math.Floor(nine_to_the_exponent)) * int64(digit)
@@ -19,7 +20,7 @@ func max_num(exponent int) int64 {
 	return max_digit_sum
 }
 
-func sum_digits(num int64, exponent int) int64 {
+func sum_digits(num int64, exponent float64) int64 {
 	var sum_of_digits_to_power int64 = 0
 	for remainder := num; remainder > 0; remainder /= 10 {
 		sum_of_digits_to_power += cache[remainder%10]
@@ -37,13 +38,22 @@ func find_matches(base_sum int64, i int64) []int64 {
 	return nums
 }
 
-func matching_numbers(exponent int) {
+func sumCubes(n int, e float64) int64 {
+	var sum int64 = 0
+	for _, c := range strconv.Itoa(n) {
+		d := (c - '0')
+		sum += int64(math.Pow(float64(d), e))
+	}
+	return sum
+}
+
+func matching_numbers(exponent float64) {
 	max := max_num(exponent)
 	fmt.Printf("%d: ", max)
 
 	// find matching numbers from 10..max
-	for i := 10; int64(i) < max; i += 10 {
-		base_sum := sum_digits(int64(i), exponent)
+	for i := int64(10); int64(i) < max; i += int64(10) {
+		base_sum := sum_digits(i, exponent)
 		nums := find_matches(base_sum, int64(i))
 		for _, n := range nums {
 			fmt.Printf("%d, ", n)
@@ -61,6 +71,6 @@ func main() {
 		cache[i] = int64(math.Pow(float64(i), float64(*expPtr)))
 	}
 
-	matching_numbers(*expPtr)
+	matching_numbers(float64(*expPtr))
 	fmt.Println("done")
 }

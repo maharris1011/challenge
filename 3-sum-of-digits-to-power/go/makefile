@@ -1,4 +1,4 @@
-binary:
+binary: digitsum.go
 	go build digitsum.go
 
 test: binary
