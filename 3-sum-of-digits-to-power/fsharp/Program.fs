@@ -44,7 +44,5 @@ let main args =
     SumOfDigits.findNumbersWithSumOfDigitsRaisedToPower (int args[0])
     |> printf "%A\n"
     |> ignore
-    // SumOfDigits.findNumbersWithSumOfDigitsRaisedToPower (int args[0])
-    // |> printfn "%A"
 
     0
