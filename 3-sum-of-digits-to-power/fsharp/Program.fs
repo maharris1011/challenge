@@ -1,7 +1,6 @@
 ﻿open System
 
 module SumOfDigits =
-    // let cache = new System.Collections.Generic.Dictionary<_, _>()
 
     let sumOfDigitsRaisedToPower (n: uint64) (p: int) =
         let rec loop (m: uint64) acc =
@@ -29,47 +28,6 @@ module SumOfDigits =
         |> List.filter (fun n -> sumOfDigitsRaisedToPower n p = int64 n)
 
 
-    let findMatchesOfPower (exponent: int) =
-        let digitsToPower = [ for i in 0UL .. 9UL -> uint64 (float i ** exponent) ]
-
-        let rec sumDigitsToPower (n: uint64) =
-            let rec loop (m: uint64) acc =
-                match m with
-                | 0UL -> acc
-                | _ -> loop (m / 10UL) (acc + digitsToPower[int (m % 10UL)])
-
-            loop n 0UL
-
-        // let rec sumDigitsToPower (x: uint64) =
-        //     match cache.TryGetValue x with
-        //     | true, v -> v
-        //     | false, _ ->
-        //         let v =
-        //             match x with
-        //             | (var1) when var1 < 10UL -> digitsToPower[int var1]
-        //             | otherwise ->
-        //                 sumDigitsToPower (x / 10UL)
-        //                 + digitsToPower[int (x % 10UL)]
-
-        //         cache.Add(x, v)
-        //         v
-
-        let topOfRange = maxNumber (exponent)
-        let candidates = [ 10UL .. 10UL .. topOfRange ]
-
-        let byTenSumDigitsToPower (x: uint64) =
-            let baseSum = sumDigitsToPower (x)
-
-            [ 0UL .. 9UL ]
-            |> List.filter (fun digit -> (x + digit) = (baseSum + digitsToPower[int digit]))
-        // for digit in 0UL .. 9UL do
-        //     if (x + digit) = (baseSum + digitsToPower[int digit]) then
-        //         printf "%u, " (x + uint64 digit)
-
-        candidates
-        |> List.map byTenSumDigitsToPower
-        |> List.append
-
 let rec maxNumber (digit: int, exponent: int) =
     let maxByDigit = uint64 (10.0 ** digit) - 1UL
     let maxSumDigits = uint64 (9.0 ** exponent) * uint64 digit
@@ -78,12 +36,16 @@ let rec maxNumber (digit: int, exponent: int) =
     | (var1, var2) when var1 > var2 -> var2
     | otherwise -> maxNumber (digit + 1, exponent)
 
+// do power math only once
+let digitsAtPower (e: int) =
+    [ 0..9 ] |> Seq.map (fun d -> float d ** e)
+
 // Returns the sum of the cubes of the digits of a number
 let sumCubes (n: uint64, e: int) =
     n
     |> string
     |> Seq.map (fun c -> int c - 48)
-    |> Seq.map (fun x -> float x ** e)
+    |> Seq.map (fun x -> digitsAtPower (e) |> Seq.item x)
     |> Seq.sum
     |> uint64
 
@@ -96,9 +58,9 @@ let specialNumbers e =
 
 [<EntryPoint>]
 let main args =
-    SumOfDigits.findMatchesOfPower (int args[0])
+    specialNumbers (int args[0])
+    |> Seq.toList
+    |> printf "%A"
     |> ignore
-    // SumOfDigits.findNumbersWithSumOfDigitsRaisedToPower (int args[0])
-    // |> printfn "%A"
 
     0
