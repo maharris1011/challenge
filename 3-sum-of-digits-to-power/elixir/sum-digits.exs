@@ -21,19 +21,20 @@ defmodule SumDigits do
   end
 
   def sum_of_digits_to_power(n, e) do
-    number_to_list_of_digits(n)
-    |> Enum.map(fn n -> :math.pow(n, e) end)
-    |> Enum.reduce(0, fn n, acc -> acc + n end)
+    Enum.reduce(number_to_list_of_digits(n), 0, fn n, acc -> 
+      acc + :math.pow(n,e) 
+    end)
+  end
+
+  def find_numbers_with_sum_of_digits_raised_to_power(p) do
+    Enum.filter(10..SumDigits.max_number(p), fn n ->
+      sum_of_digits_to_power(n, p) == n
+    end)
   end
 
 end
 
 power = 5
-candidates = 10..SumDigits.max_number(power)
-sum_matches_number =
-  for n <- candidates, SumDigits.sum_of_digits_to_power(n, power) == n do
-    n
-  end
-
-IO.puts(Enum.join(sum_matches_number, ", "))
+matches = SumDigits.find_numbers_with_sum_of_digits_raised_to_power(power)
+IO.inspect matches, label: "for power #{power}"
 
