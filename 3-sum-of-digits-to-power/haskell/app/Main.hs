@@ -4,12 +4,13 @@ import System.Environment
 import Data.Char (digitToInt)
 
 -- Returns the sum of the cubes of the digits of a number
-sumCubes :: Int -> Int -> Int
-sumCubes x e = sum . map (^e) . map digitToInt . show
+sumCubes :: Int -> Int
+sumCubes x = 
+  sum . map (^5) . map digitToInt . show
 
 -- Returns the list of numbers for which the sum of the cubes of their digits equals the original number
 specialNumbers :: Int -> [Int]
-specialNumbers e = [x | x <- [1..maxNumber e], x == sumCubes x e]
+specialNumbers e = [x | x <- [1..maxNumber e], x == sumCubes x]
 
 
 -- first sum of exponents where largest n-digit number > sum of 9s to exponent
@@ -42,5 +43,5 @@ main :: IO ()
 main = do
   args <- getArgs
   let exponent = (read $ head args :: Int)
-  print (specialNumbers exponent)
-  -- print (map fst (matchingPairs exponent))
+  -- print (specialNumbers exponent)
+  print (map fst (matchingPairs exponent))
