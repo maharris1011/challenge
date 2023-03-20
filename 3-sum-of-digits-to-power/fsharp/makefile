@@ -1,4 +1,4 @@
-PLATFORM?=osx-x64
+PLATFORM?=osx-arm64
 all : clean restore build publish
 
 clean:

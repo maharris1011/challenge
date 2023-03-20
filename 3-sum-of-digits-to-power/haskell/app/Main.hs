@@ -5,8 +5,7 @@ import Data.Char (digitToInt)
 
 -- Returns the sum of the cubes of the digits of a number
 sumCubes :: Int -> Int
-sumCubes x =
-  sum . map (^5) . map digitToInt . show
+sumCubes x = sum . map (^5) . map digitToInt . show
 
 -- Returns the list of numbers for which the sum of the cubes of their digits equals the original number
 specialNumbers :: Int -> [Int]
@@ -43,10 +42,5 @@ main :: IO ()
 main = do
   args <- getArgs
   let exponent = (read $ head args :: Int)
-<<<<<<< HEAD
   -- print (specialNumbers exponent)
   print (map fst (matchingPairs exponent))
-=======
-  print (specialNumbers exponent)
-  -- print (map fst (matchingPairs exponent))
->>>>>>> 8803eea (use chatgpt code)
