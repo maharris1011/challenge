@@ -27,20 +27,12 @@ func numToListOfDigitsLoop(num: Int64) -> [Int64]
     return digits;
 }
 
-func numToListOfDigitsRec(num: Int64) -> [Int64]
-{
-    (num < 10) ? [num] : [num % 10] + numToListOfDigitsRec(num: num / 10);
-}
-
 func sumDigits(num: Int64, table: [Decimal]) -> Decimal {
     return numToListOfDigitsLoop(num: num).reduce(0, {x, y in x + table[Int(y)]});
 }
 
-
 @main
 public struct sum_of_digits_to_power {
-    public private(set) var text = "Hello, World!"
-
     public static func main() {
         if (CommandLine.arguments.count > 1) {
             exponent = Int(atoi(CommandLine.arguments[1]));

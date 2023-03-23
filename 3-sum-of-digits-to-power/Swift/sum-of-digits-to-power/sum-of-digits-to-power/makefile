@@ -12,7 +12,7 @@ publish: Sources/sum-of-digits-to-power/sum_of_digits_to_power.swift
 	swift build -c release
 
 run:
-	swift run $(POWER)
+	swift run sum-of-digits-to-power $(POWER)
 
 test: publish
 	.build/$(PLATFORM)/release/sum-of-digits-to-power 3; \
