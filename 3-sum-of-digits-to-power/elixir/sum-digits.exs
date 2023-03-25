@@ -1,11 +1,4 @@
 defmodule SumDigits do
-  def number_to_list_of_digits(n) when n < 10 do
-    [n]
-  end
-
-  def number_to_list_of_digits(n) do 
-    [rem(n, 10) | number_to_list_of_digits(div(n, 10))]
-  end
 
   def max_number(d, maxD, e) do
     cond do
@@ -21,20 +14,28 @@ defmodule SumDigits do
   end
 
   def sum_of_digits_to_power(n, e) do
-    Enum.reduce(number_to_list_of_digits(n), 0, fn n, acc -> 
-      acc + :math.pow(n,e) 
+    Enum.reduce(Integer.digits(n), 0, fn d, acc -> 
+      acc + :math.pow(d, e) 
     end)
   end
 
-  def find_numbers_with_sum_of_digits_raised_to_power(p) do
-    Enum.filter(10..SumDigits.max_number(p), fn n ->
-      sum_of_digits_to_power(n, p) == n
-    end)
+  def numbers_in_next_10(n, p) do
+    baseSum = sum_of_digits_to_power(n, p)
+    [0,1,2,3,4,5,6,7,8,9] |> Enum.map(fn d -> {n + d, baseSum + :math.pow(d, p)} end) 
+      |> Enum.filter(fn {num, sum} -> num == sum end) 
+      |> Enum.map(fn {num, _} -> num end)
   end
 
+  def numbers_equal_to_sum_of_digits_raised_to_power(start, p, max, acc) do
+    cond do
+      (start > max) -> acc
+      true -> numbers_equal_to_sum_of_digits_raised_to_power(start + 10, p, max, acc ++ numbers_in_next_10(start, p))
+    end
+  end
+
+  def find_for_power(p) do
+    IO.inspect numbers_equal_to_sum_of_digits_raised_to_power(10, p, max_number(p), []), label: "for power #{p}"
+  end
 end
 
-power = 5
-matches = SumDigits.find_numbers_with_sum_of_digits_raised_to_power(power)
-IO.inspect matches, label: "for power #{power}"
-
+System.argv() |> Enum.map(fn arg -> SumDigits.find_for_power String.to_integer(arg) end)
