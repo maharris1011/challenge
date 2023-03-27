@@ -5,8 +5,8 @@ all : clean build
 clean:
 	rm Sumdigits.class
 
-build: Sumdigits.java
-	javac Sumdigits.java
+build: Sumdigits.java DigitFinder.java
+	javac DigitFinder.java Sumdigits.java
 
 run: build
 	java Sumdigits $(POWER)
