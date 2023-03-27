@@ -6,9 +6,10 @@ cache = {}
 
 def max_num(p):
     digit = 2
-    while (10**digit - 1) < (9**p * digit):
+    nineToTheP = 9**p
+    while (10**digit - 1) < (nineToTheP * digit):
         digit += 1
-    return (9**p * digit)
+    return (nineToTheP * digit)
 
 
 def sum_of_digits_raised_to_power(n, p):
