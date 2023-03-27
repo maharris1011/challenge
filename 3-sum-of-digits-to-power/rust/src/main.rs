@@ -1,5 +1,6 @@
 use clap::Parser;
 use num_traits::pow;
+use std::time::{Instant};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -39,8 +40,9 @@ fn main() {
     let args = Args::parse();
 
     println!("exponent: {}", args.power);
-
-    let numbers = find_numbers_with_sum_of_digits_raised_to_power(args.power);
-    println!("{:?}", numbers);
+    let start = Instant::now();
+    println!("{:?}", find_numbers_with_sum_of_digits_raised_to_power(args.power));
+    let duration = start.elapsed().as_millis() as f64;
+    println!("duration: {:?}", duration/1000.0);
 }
 
