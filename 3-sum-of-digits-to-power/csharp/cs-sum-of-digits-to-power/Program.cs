@@ -4,7 +4,8 @@
     {
         private int _exponent;
         private ulong _nineToTheExponent;
-        private Dictionary<ulong, ulong> _cache = new Dictionary<ulong, ulong>();
+
+        private ulong[] _cache = new ulong[10];
 
         public DigitFinder(int exp)
         {
@@ -35,23 +36,13 @@
         {
             ulong digitSum = 0;
             ulong number = num;
-            ulong cachedSum = 0;
-            while (number != 0 && (false == _cache.TryGetValue(number, out cachedSum)))
+            while (number != 0)
             {
-                try
-                {
-                    ulong digit = number % 10;
-                    number = number / 10;
-                    digitSum += _cache[digit];
-                }
-                catch (IndexOutOfRangeException e)
-                {
-                    Console.WriteLine($"num % 10 = {num % 10}");
-                    Console.WriteLine(e.Message);
-                }
+                ulong digit = number % 10;
+                number = number / 10;
+                digitSum += _cache[digit];
             }
-            _cache[num] = digitSum + _cache[number];
-            return _cache[num];
+            return digitSum;
         }
 
 
