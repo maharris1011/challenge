@@ -11,7 +11,7 @@ restore:
 build: Program.cs
 	dotnet build
 
-publish: build
+publish: Program.cs
 	dotnet publish --self-contained -c Release ./cs-sum-of-digits-to-power.csproj
 
 run:
