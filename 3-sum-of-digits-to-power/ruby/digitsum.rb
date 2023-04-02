@@ -1,3 +1,5 @@
+require 'benchmark'
+
 def maxNumberSearch(e)
   d = 2
   while ((10 ** d) - 1 < (9 ** e) * d) 
@@ -29,10 +31,13 @@ end
 
 ARGV.each do |power|
   e = power.to_i
-  exps = (0..9).map {|i| i ** e }
-  rg = (10..maxNumberSearch(e)).step(10).map { |num|
-    find_in_10(num,exps)
-  }
-  .flatten
-  printf "#{e}: #{rg}\n"
+  time_elapsed = Benchmark.measure do
+    exps = (0..9).map {|i| i ** e }
+    rg = (10..maxNumberSearch(e)).step(10).map { |num|
+      find_in_10(num,exps)
+    }
+    .flatten
+    printf "#{e}: #{rg}\n"
+  end
+  printf "#{e}: #{time_elapsed}"
 end
