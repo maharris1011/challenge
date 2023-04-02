@@ -1,4 +1,3 @@
-
 def maxNumberSearch(e)
   d = 2
   while ((10 ** d) - 1 < (9 ** e) * d) 
@@ -8,25 +7,32 @@ def maxNumberSearch(e)
 end
 
 def digitsum(n,e)
-  return n.to_s.split("")
-    .map { |d| d.to_i ** e }
-    .reduce { |acc, i| i + acc }
+  sum = 0
+  while n != 0 do
+    sum = sum + e[(n % 10)]
+    n = n / 10
+  end
+  return sum
 end
+
+def find_in_10(num, e)
+  baseSum = digitsum(num, e)
+  matching = (0..9).select { |i|
+    (num + i) == (baseSum + e[i])
+  }
+  .map { |match| 
+    num + match
+  }
+  return matching
+end
+
 
 ARGV.each do |power|
   e = power.to_i
+  exps = (0..9).map {|i| i ** e }
   rg = (10..maxNumberSearch(e)).step(10).map { |num|
-    baseSum = digitsum(num,e)
-    matching = (0..9).map { |i|
-      [num + i, baseSum + i ** e]
-    }
-    .select { |num, sum| num == sum }
-    .collect { |arr| arr.first }
-
-    matching
+    find_in_10(num,exps)
   }
-  .select {|arr| arr.empty? == false}
   .flatten
-
   printf "#{e}: #{rg}\n"
 end
