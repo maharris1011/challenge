@@ -26,6 +26,7 @@ module SumOfDigits =
 
         [ 0L .. 9L ]
         |> List.filter (fun d -> (n + d) = (baseSum + cache[int (d)]))
+        |> List.map (fun d -> n + d)
 
     let findNumbersWithSumOfDigitsRaisedToPower p =
         let maxNum = maxNumber p
