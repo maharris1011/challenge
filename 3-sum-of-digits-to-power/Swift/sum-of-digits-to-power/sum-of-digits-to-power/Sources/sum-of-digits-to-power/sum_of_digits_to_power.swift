@@ -22,20 +22,14 @@ func minNumber(exp: Int) -> Int64 {
     return retval;
 }
 
-func numToListOfDigitsLoop(num: Int64) -> [Int]
-{
+func sumDigits(num: Int64, table: [Int]) -> Int64 {
+    var sum: Int64 = 0;
     var number = num;
-    var digits: [Int64] = [];
-    while (number != 0) {
-        digits.append(number % 10);
+    while (number > 0) {
+        sum += Int64(table[Int(number % 10)]);
         number /= 10;
     }
-    return digits;
-}
-
-func sumDigits(num: Int64, table: [Int]) -> Int64 {
-    return Int64(numToListOfDigitsLoop(num: num)
-                    .reduce(0, {x, y in x + table[Int(y)]}));
+    return sum;
 }
 
 @main
