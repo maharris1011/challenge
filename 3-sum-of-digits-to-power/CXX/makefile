@@ -5,13 +5,13 @@ all : clean build publish
 clean:
 	rm digitsum
 
-build: digitsum.c
-	clang digitsum.c -o digitsum
+build: digitsum.cpp
+	clang++ -o digitsum digitsum.cpp
 
-publish: digitsum.c
-	clang digitsum.c -o digitsum
+publish: digitsum.cpp
+	clang++ -o digitsum digitsum.cpp
 
-run:
+run: publish
 	time ./digitsum $(POWER)
 
 test: publish
