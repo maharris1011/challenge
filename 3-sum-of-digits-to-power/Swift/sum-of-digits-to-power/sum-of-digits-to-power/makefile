@@ -15,10 +15,10 @@ run:
 	swift run sum-of-digits-to-power $(POWER)
 
 test: publish
-	.build/$(PLATFORM)/release/sum-of-digits-to-power 3; \
-	.build/$(PLATFORM)/release/sum-of-digits-to-power 3; \
-	.build/$(PLATFORM)/release/sum-of-digits-to-power 3; \
+	.build/release/sum-of-digits-to-power 3; \
+	.build/release/sum-of-digits-to-power 3; \
+	.build/release/sum-of-digits-to-power 3; \
 	for i in 3 4 5 6 7 8 9; \
 	do \
-		time .build/$(PLATFORM)/release/sum-of-digits-to-power $$i; \
+		time .build/release/sum-of-digits-to-power $$i; \
 	done
