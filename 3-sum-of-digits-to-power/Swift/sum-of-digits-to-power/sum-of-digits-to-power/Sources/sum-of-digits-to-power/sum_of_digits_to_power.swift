@@ -1,11 +1,7 @@
 import Foundation
 
 func pow(_ x: Int, _ y: Int) -> Int {
-  var result = 1
-  for _ in 0..<y {
-    result *= x
-  }
-  return result
+    return Int(pow(Double(x), Double(y)))
 }
 
 func minNumber(exp: Int) -> Int64 {
