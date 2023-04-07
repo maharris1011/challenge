@@ -18,7 +18,7 @@ specialNumbersInNext10 e n = do
 specialNumbers' :: Int -> Int -> Int -> [Int]
 specialNumbers' n e maxNumber
   | n > maxNumber = []
-  | otherwise = specialNumbers' (n+10) e maxNumber ++ specialNumbersInNext10 e n
+  | otherwise = specialNumbersInNext10 e n ++ specialNumbers' (n+10) e maxNumber
 
 -- Returns the list of numbers for which the sum of the cubes
 -- of their digits equals the original number
