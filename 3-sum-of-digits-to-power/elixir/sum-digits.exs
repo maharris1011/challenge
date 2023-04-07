@@ -14,22 +14,22 @@ defmodule SumDigits do
   end
 
   def sum_of_digits_to_power(n, e) do
-    Enum.reduce(Integer.digits(n), 0, fn d, acc -> 
-      acc + :math.pow(d, e) 
+    Enum.reduce(Integer.digits(n), 0, fn d, acc ->
+      acc + :math.pow(d, e)
     end)
   end
 
-  def numbers_in_next_10(n, p) do
+  def numbers_in_next_10(p, n) do
     baseSum = sum_of_digits_to_power(n, p)
-    [0,1,2,3,4,5,6,7,8,9] |> Enum.map(fn d -> {n + d, baseSum + :math.pow(d, p)} end) 
-      |> Enum.filter(fn {num, sum} -> num == sum end) 
-      |> Enum.map(fn {num, _} -> num end)
+    Enum.to_list(0..9)
+      |> Enum.filter(fn d -> (n + d) == baseSum + :math.pow(d, p) end)
+      |> Enum.map(fn d -> n + d end)
   end
 
   def numbers_equal_to_sum_of_digits_raised_to_power(start, p, max, acc) do
     cond do
       (start > max) -> acc
-      true -> numbers_equal_to_sum_of_digits_raised_to_power(start + 10, p, max, acc ++ numbers_in_next_10(start, p))
+      true -> numbers_equal_to_sum_of_digits_raised_to_power(start + 10, p, max, numbers_in_next_10(p, start) ++ acc)
     end
   end
 
