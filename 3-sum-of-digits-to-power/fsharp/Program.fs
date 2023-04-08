@@ -4,14 +4,13 @@ module SumOfDigits =
     let maxNumber (exponent: int) : int64 =
         let nineToTheExponent = int64 (Math.Pow(9.0, exponent))
 
-        let rec loop (digit: int) (maxByDigit: int64) =
-            let maxSumDigits = nineToTheExponent * int64 (digit)
+        let (_, maxPowerNum) =
+            [ 0L .. 15L ]
+            |> List.map (fun d -> (int64 (Math.Pow(10.0, float d)) - 1L, nineToTheExponent * d))
+            |> List.filter (fun (a, b) -> a > b)
+            |> List.head
 
-            match ((maxByDigit - 1L), maxSumDigits) with
-            | (var1, var2) when var1 > var2 -> var2
-            | _ -> loop (digit + 1) (maxByDigit * 10L)
-
-        loop 2 100
+        maxPowerNum
 
     let sumOfDigitsRaisedToPower (cache: int64 array) (n: int64) =
         (string n).ToCharArray()
@@ -27,14 +26,14 @@ module SumOfDigits =
         let sumDigits = sumOfDigitsRaisedToPower cache
 
         seq {
-            for n in 10L .. 10L .. maxNum do
-                if n = sumDigits n then n
+            for n in 10L .. maxNum do
+                if n = sumDigits n then yield n
         }
-
 
 [<EntryPoint>]
 let main args =
     SumOfDigits.findNumbersWithSumOfDigitsRaisedToPower (int args[0])
+    |> List.ofSeq
     |> printf "%A\n"
     |> ignore
 
