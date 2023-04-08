@@ -1,4 +1,5 @@
 PLATFORM?=osx-arm64
+POWER?=5
 all : clean restore build publish
 
 clean:
