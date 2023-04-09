@@ -27,13 +27,12 @@ let findMatches = (min, exp) => {
   const ds = digitSum(cubes)
   for (i = min; i <= max; i += 10) {
     let baseSum = ds(i)
-    var matchingNumbers = [...Array(10).keys()].filter((x) => {
-      return i + x == baseSum + cubes[x]
-    })
-    var matchingSums = matchingNumbers.map((x) => {
-      return i + x
-    })
-    matches = [...matches, ...matchingSums]
+    var matchingSums = [...Array(10).keys()]
+      .filter((x) => i + x == baseSum + cubes[x])
+      .map((x) => i + x)
+    if (matchingSums.length > 0) {
+      matches = [...matches, ...matchingSums]
+    }
   }
   return matches
 }
