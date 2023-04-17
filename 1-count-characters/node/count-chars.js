@@ -13,10 +13,10 @@ let count_chars = (ch, str) => {
 }
 
 let assert = (expr, str) => {
-  if (expr) {
-    console.log(`true: ${str}`)
-  } else {
+  if (expr == false) {
     console.log(`false: ${str}`)
+  } else {
+    console.log(`${str}`)
   }
 }
 
