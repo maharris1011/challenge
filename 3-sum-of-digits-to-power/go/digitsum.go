@@ -55,9 +55,9 @@ func matching_numbers(exponent float64) {
 	var wg = &sync.WaitGroup{}
 
 	// find matching numbers from 10..max
-	for i := int64(10); int64(i) < max+1000; i += int64(1000) {
+	for i := int64(10); i < max+100_000; i += int64(100_000) {
 		wg.Add(1)
-		go matching_numbers_between(i, i+1000, exponent, wg)
+		go matching_numbers_between(i, i+100_000, exponent, wg)
 	}
 	wg.Wait()
 }
