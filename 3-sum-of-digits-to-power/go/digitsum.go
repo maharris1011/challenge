@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
-	"strconv"
+	"sync"
 )
 
 var cache [10]int64
@@ -28,37 +28,38 @@ func sum_digits(num int64, exponent float64) int64 {
 	return sum_of_digits_to_power
 }
 
-func find_matches(base_sum int64, i int64) []int64 {
+func find_matches_in_next_10(base_sum int64, base_num int64) []int64 {
 	var nums []int64
 	for j := 0; j < 10; j++ {
-		if (int64(j) + i) == (base_sum + cache[j]) {
-			nums = append(nums, (int64(j) + i))
+		if (int64(j) + base_num) == (base_sum + cache[j]) {
+			nums = append(nums, (int64(j) + base_num))
 		}
 	}
 	return nums
 }
 
-func sumCubes(n int, e float64) int64 {
-	var sum int64 = 0
-	for _, c := range strconv.Itoa(n) {
-		d := (c - '0')
-		sum += int64(math.Pow(float64(d), e))
+func matching_numbers_between(start int64, end int64, exponent float64, wg *sync.WaitGroup) {
+	for i := start; i < end; i += int64(10) {
+		base_sum := sum_digits(i, exponent)
+		nums := find_matches_in_next_10(base_sum, int64(i))
+		for _, n := range nums {
+			fmt.Printf("%d, ", n)
+		}
 	}
-	return sum
+	wg.Done()
 }
 
 func matching_numbers(exponent float64) {
 	max := max_num(exponent)
 	fmt.Printf("%d: ", max)
+	var wg = &sync.WaitGroup{}
 
 	// find matching numbers from 10..max
-	for i := int64(10); int64(i) < max; i += int64(10) {
-		base_sum := sum_digits(i, exponent)
-		nums := find_matches(base_sum, int64(i))
-		for _, n := range nums {
-			fmt.Printf("%d, ", n)
-		}
+	for i := int64(10); int64(i) < max+1000; i += int64(1000) {
+		wg.Add(1)
+		go matching_numbers_between(i, i+1000, exponent, wg)
 	}
+	wg.Wait()
 }
 
 func main() {
