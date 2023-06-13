@@ -10,7 +10,7 @@ import (
 var cache [10]int64
 
 func max_num(exponent float64) int64 {
-	var max_digit_sum int64 = int64(math.Pow(9, exponent))
+	var max_digit_sum int64 = 9+9
 	var maximum int64 = 10
 	nine_to_the_exponent := math.Pow(9, exponent)
 	for digit := 2; maximum-1 < max_digit_sum; digit++ {
@@ -51,11 +51,12 @@ func matching_numbers_between(start int64, end int64, exponent float64, wg *sync
 
 func matching_numbers(exponent float64) {
 	max := max_num(exponent)
-	fmt.Printf("%d: ", max)
 	var wg = &sync.WaitGroup{}
+	start := 10
+	fmt.Printf("%d: .. %d: ", start, max)
 
 	// find matching numbers from 10..max
-	for i := int64(10); i < max+100_000; i += int64(100_000) {
+	for i := int64(start); i < max+100_000; i += int64(100_000) {
 		wg.Add(1)
 		go matching_numbers_between(i, i+100_000, exponent, wg)
 	}
