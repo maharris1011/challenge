@@ -54,13 +54,16 @@ func matching_numbers_between(start int64, end int64, _ float64, wg *sync.WaitGr
 func matching_numbers(exponent float64) {
 	max := max_num(exponent)
 	var wg = &sync.WaitGroup{}
-	start := 10
+	var start int64 = 10
 	fmt.Printf("start: %d .. max: %d: ", start, max)
 
 	// find matching numbers from 10..max
-	for i := int64(start); i < max+100_000; i += int64(100_000) {
+	// assign each working group a disjoint set of consecutive numbers to search
+	var i int64 = start
+	const increment int64 = 1_000_000
+	for ; i < max+increment; i += increment {
 		wg.Add(1)
-		go matching_numbers_between(i, i+100_000, exponent, wg)
+		go matching_numbers_between(i, i+increment, exponent, wg)
 	}
 	wg.Wait()
 }
