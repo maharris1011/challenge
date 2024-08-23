@@ -10,17 +10,18 @@ import (
 var cache [10]int64
 
 func max_num(exponent float64) int64 {
-	var max_digit_sum int64 = 9+9
+	var max_digit_sum int64 = 9 + 9
 	var maximum int64 = 10
-	nine_to_the_exponent := math.Pow(9, exponent)
-	for digit := 2; maximum-1 < max_digit_sum; digit++ {
+	nine_to_the_exponent := int64(math.Floor(math.Pow(9, exponent)))
+	var digit int64 = 2
+	for ; maximum-1 < max_digit_sum; digit++ {
 		maximum *= 10
-		max_digit_sum = int64(math.Floor(nine_to_the_exponent)) * int64(digit)
+		max_digit_sum = nine_to_the_exponent * digit
 	}
 	return max_digit_sum
 }
 
-func sum_digits(num int64, exponent float64) int64 {
+func sum_digits(num int64) int64 {
 	var sum_of_digits_to_power int64 = 0
 	for remainder := num; remainder > 0; remainder /= 10 {
 		sum_of_digits_to_power += cache[remainder%10]
@@ -30,17 +31,18 @@ func sum_digits(num int64, exponent float64) int64 {
 
 func find_matches_in_next_10(base_sum int64, base_num int64) []int64 {
 	var nums []int64
-	for j := 0; j < 10; j++ {
-		if (int64(j) + base_num) == (base_sum + cache[j]) {
-			nums = append(nums, (int64(j) + base_num))
+	var i int64 = 0
+	for ; i < 10; i++ {
+		if (base_num + i) == (base_sum + cache[i]) {
+			nums = append(nums, (i + base_num))
 		}
 	}
 	return nums
 }
 
-func matching_numbers_between(start int64, end int64, exponent float64, wg *sync.WaitGroup) {
+func matching_numbers_between(start int64, end int64, _ float64, wg *sync.WaitGroup) {
 	for i := start; i < end; i += int64(10) {
-		base_sum := sum_digits(i, exponent)
+		base_sum := sum_digits(i)
 		nums := find_matches_in_next_10(base_sum, int64(i))
 		for _, n := range nums {
 			fmt.Printf("%d, ", n)
@@ -53,7 +55,7 @@ func matching_numbers(exponent float64) {
 	max := max_num(exponent)
 	var wg = &sync.WaitGroup{}
 	start := 10
-	fmt.Printf("%d: .. %d: ", start, max)
+	fmt.Printf("start: %d .. max: %d: ", start, max)
 
 	// find matching numbers from 10..max
 	for i := int64(start); i < max+100_000; i += int64(100_000) {
