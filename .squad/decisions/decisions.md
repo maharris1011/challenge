@@ -361,6 +361,53 @@ The Ruby implementation of the narcissistic number algorithm (`digitsum.rb`) was
 
 ---
 
+### 9. F# Narcissistic Number Performance Optimization
+
+**Date:** 2026-04-16  
+**Author:** Data (Backend Dev)  
+**Status:** ✅ Implemented
+
+#### Context
+
+The F# implementation of the narcissistic number algorithm (sum-of-digits-to-power) was underperforming due to:
+1. String allocation in the hot path (`(string n).ToCharArray()`)
+2. Redundant compilation on every benchmark run (`needsBuild: true` in runner)
+3. Single-threaded sequential scan for large search spaces
+
+For power=9, the search space is ~387 million numbers, and string allocation on every iteration created catastrophic GC pressure.
+
+#### Decision
+
+**1. Replace String-Based Digit Extraction with Arithmetic**
+- Replaced `(string n).ToCharArray()` with modulo/division arithmetic loop (`sumOfDigitsArith()`)
+- Eliminates ~387 million heap allocations for power=9
+- Modulo/division arithmetic is 10–100x faster than string conversion in .NET
+
+**2. Add Adaptive Parallelism for Large Powers**
+- Powers >= 7: Use `System.Threading.Tasks.Parallel.For()` partitioned by `ProcessorCount`
+- Powers < 7: Use simple `seq {}` for clean single-threaded execution
+- For power=7 (~3.8M iterations), parallelism provides measurable speedup
+- Avoids coordination overhead for smaller powers
+
+**3. Pre-Build Binary and Remove needsBuild Flag**
+- Ran `dotnet publish -c Release -r osx-arm64 --self-contained false` once
+- Removed `needsBuild: true` from F# runner in `runners/index.js`
+- Uses pre-built binary directly; eliminates 1–2s compilation overhead per run
+
+#### Performance Impact
+
+- **Power 7 execution:** 0.343s (real time) with parallelism ✅
+- **Build overhead:** Eliminated
+- **String allocation:** Removed from hot path
+
+#### Correctness Verification
+
+- Power 3: `[153L; 370L; 371L; 407L]` ✅
+- Power 5: `[4150L; 4151L; 54748L; 92727L; 93084L; 194979L]` ✅
+- Power 7: `[1741725L; 4210818L; 9800817L; 9926315L; 14459929L]` ✅
+
+---
+
 ## Decision Summary Table
 
 | Decision | Owner | Status | Impact |
@@ -373,8 +420,9 @@ The Ruby implementation of the narcissistic number algorithm (`digitsum.rb`) was
 | Power Range + Timeout UI | Andy | ✅ Implemented | User control |
 | Timeout & Cancel Fixes | Data | ✅ Implemented | Backend reliability |
 | Ruby Performance | Data | ✅ Implemented | 16% speedup |
+| F# Performance | Data | ✅ Implemented | Build-free, ~0.34s power 7 |
 
 ---
 
-**Last Updated:** 2026-04-01T19:12:32Z  
-**Merged from:** .squad/decisions/inbox/ (4 files)
+**Last Updated:** 2026-04-01T19:24:15Z  
+**Merged from:** .squad/decisions/inbox/ (5 files)

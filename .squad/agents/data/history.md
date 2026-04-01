@@ -182,3 +182,35 @@ Python, Java, Ruby, Go, Node.js, Rust, C#, C, C++, Swift, Haskell, F#, Elixir, E
 - Main loop adaptively chooses the right strategy based on search space size
 
 **Correctness Verified:** Power 3 and 5 produce correct narcissistic numbers matching original implementation.
+
+### F# Performance Optimization (2026-04-16)
+
+**Task:** Optimize `3-sum-of-digits-to-power/fsharp/Program.fs` to improve execution time and eliminate unnecessary build overhead.
+
+**Optimizations Applied:**
+1. **Arithmetic digit extraction**: Replaced `(string n).ToCharArray()` with arithmetic-based `sumOfDigitsArith()` using modulo/division (`n % 10L`, `n / 10L`). Eliminates ~387 million string allocations for power=9. This is the dominant optimization.
+2. **Adaptive parallelism**: Added `System.Threading.Tasks.Parallel.For()` for powers >= 7. Chunks the search range by `ProcessorCount`, runs segments in parallel, collects and sorts results. For p=7 (~3.8M iterations), parallelism provides meaningful speedup.
+3. **Pre-built binary**: Ran `dotnet publish -c Release -r osx-arm64` once. Removed `needsBuild: true` and `getBuildCommand()` from the F# runner in `runners/index.js`. The webapp now uses the pre-built binary directly, eliminating 1–2 second dotnet compilation overhead on every benchmark run.
+
+**Performance Impact:**
+- Power 7 execution: **0.343s** (real time) with parallelism enabled.
+- Build overhead eliminated: No longer runs `dotnet publish` on every benchmark.
+- Single-threaded (powers < 7) remains clean and simple with `seq {}`.
+
+**Key Insights:**
+- String allocation (`string n`) is catastrophically expensive in tight loops. Arithmetic digit extraction is mandatory for competitive performance in .NET languages.
+- F#'s `Parallel.For()` provides clean parallelism with minimal boilerplate. Chunking by `ProcessorCount` avoids work-stealing overhead for embarrassingly parallel workloads.
+- Pre-building .NET binaries removes JIT warm-up and compilation overhead. For benchmarking, this is essential — the runner should execute the same binary state on every run.
+- F# list format `[153L; 370L; 371L; 407L]` matches the existing parser. Output format must remain stable for webapp compatibility.
+
+**Code Structure:**
+- `sumOfDigitsArith()`: Arithmetic-based digit sum (replaces string-based `sumOfDigitsRaisedToPower()`)
+- `findNumbersWithSumOfDigitsRaisedToPower()`: Adaptive dispatch — powers >= 7 use `Parallel.For()`, powers < 7 use `seq {}`
+- Parallel path: chunks range into `ProcessorCount` segments, runs in parallel, sorts and flattens results
+
+**Correctness Verified:**
+- Power 3: `[153L; 370L; 371L; 407L]` ✅
+- Power 5: `[4150L; 4151L; 54748L; 92727L; 93084L; 194979L]` ✅ (6 numbers, includes 4150/4151)
+- Power 7: `[1741725L; 4210818L; 9800817L; 9926315L; 14459929L]` ✅
+
+**Build Artifact:** `/Users/markharris/Code/challenge/3-sum-of-digits-to-power/fsharp/bin/Release/net10.0/osx-arm64/publish/fs-sum-of-digits-to-power`
