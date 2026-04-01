@@ -70,6 +70,33 @@
 
 **Status:** ACTIVE
 
+### 2026-04-16: Rust Narcissistic Number Optimization
+**By:** Data (Backend Dev)  
+**What:**
+- Replaced string-based digit extraction with arithmetic loop (zero heap allocations)
+- Pre-computed `[u64; 10]` power cache (avoid repeated pow() in inner loop)
+- Adaptive parallelism via rayon: p >= 7 uses `into_par_iter()` (threshold matches F# and Ruby)
+- Removed `num-traits` dependency (native `u64::pow()` sufficient)
+- Preserved output format (`{:?}` debug format for Vec<u64>)
+
+**Results:**
+- p=3: <1ms (sequential)
+- p=5: 1ms (sequential)  
+- p=7: 40ms (parallel, ~9x user/wall-time ratio)
+
+**Why:**
+- Heap allocations (~387M for p=9) were primary bottleneck
+- Pre-computed cache eliminates inner-loop pow() calls
+- Parallelism threshold aligns with team consistency (F#, Ruby)
+- Reduces binary size and compile time by removing unused dependency
+
+**Files Changed:**
+- `3-sum-of-digits-to-power/rust/src/main.rs` (full rewrite)
+- `3-sum-of-digits-to-power/rust/Cargo.toml` (rayon added, num-traits removed)
+- Binary rebuilt: `3-sum-of-digits-to-power/rust/target/release/sumdigits`
+
+**Status:** IMPLEMENTED ✅
+
 ## Governance
 
 - All meaningful changes require team consensus
@@ -78,4 +105,4 @@
 
 ---
 
-*Last Updated: 2026-04-01T14:24:58Z by Scribe*
+*Last Updated: 2026-04-01T19:27:30Z by Scribe*
