@@ -214,3 +214,31 @@ Python, Java, Ruby, Go, Node.js, Rust, C#, C, C++, Swift, Haskell, F#, Elixir, E
 - Power 7: `[1741725L; 4210818L; 9800817L; 9926315L; 14459929L]` ✅
 
 **Build Artifact:** `/Users/markharris/Code/challenge/3-sum-of-digits-to-power/fsharp/bin/Release/net10.0/osx-arm64/publish/fs-sum-of-digits-to-power`
+
+### Rust Performance Optimization (2026-04-16)
+
+**Task:** Optimize `3-sum-of-digits-to-power/rust/src/main.rs` to eliminate per-iteration allocations and add parallelism.
+
+**Optimizations Applied:**
+1. **Arithmetic digit extraction**: Replaced `n.to_string().chars().fold(...)` with a `digit_sum()` function using `%` and `/` arithmetic. For p=9 (~387M iterations), this eliminates hundreds of millions of heap allocations.
+2. **Digit power cache**: Pre-computed `[u64; 10]` array using `std::array::from_fn(|d| (d as u64).pow(p as u32))`. Avoids repeating `pow()` calls inside the hot loop.
+3. **Rayon parallel iteration**: Added `rayon` crate; for p >= 7 uses `.into_par_iter()` to saturate all cores. Adaptive threshold matches F# and Ruby implementations.
+4. **Removed `num-traits`**: Replaced `pow(9u64, power)` with native `9u64.pow(power as u32)`, eliminating an external dependency.
+
+**Performance Results (p=7, ~3.8M iterations):**
+- p=7: **0.04s** wall time, 0.355s user time (multi-core saturation)
+- p=3: <1ms
+
+**Correctness Verified:**
+- Power 3: `[153, 370, 371, 407]` ✅
+- Power 5: `[4150, 4151, 54748, 92727, 93084, 194979]` ✅ (6 numbers correct)
+- Power 7: `[1741725, 4210818, 9800817, 9926315, 14459929]` ✅
+
+**Key Insights:**
+- `to_string()` in a hot loop is catastrophic; arithmetic digit extraction is the mandatory optimization for Rust number processing loops.
+- `std::array::from_fn` is idiomatic for fixed-size pre-computed arrays in Rust.
+- Rayon's `.into_par_iter()` is a one-line change for embarrassingly parallel workloads; no manual chunking needed.
+- Result ordering from `into_par_iter()` is non-deterministic; added `sort_unstable()` for parallel paths only.
+- Output format preserved: `println!("{:?}", results)` produces bracketed comma-separated list as expected by webapp parser.
+
+**Build Artifact:** `3-sum-of-digits-to-power/rust/target/release/sumdigits`

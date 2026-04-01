@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export const api = axios.create({
   baseURL: '/api',
-  timeout: 90000, // 90s — longer than the 60s execution timeout
+  timeout: 300000, // 5 min max — per-request timeout is passed to backend
 })
 
 export interface Language {
@@ -36,11 +36,18 @@ export interface BatchResult {
 export const getLanguages = () =>
   api.get<Language[]>('/languages').then(r => r.data)
 
-export const runLanguage = (language: string, power: number) =>
-  api.post<RunResult>('/run', { language, power }).then(r => r.data)
+export const runLanguage = (language: string, power: number, timeout?: number) =>
+  api.post<RunResult>('/run', { language, power, timeout }, {
+    timeout: timeout ? (timeout + 10) * 1000 : 300000,
+  }).then(r => r.data)
 
-export const runBatch = (languages: string[], power: number, label?: string) =>
-  api.post<BatchResult>('/batch', { languages, power, label }).then(r => r.data)
+export const runBatch = (languages: string[], power: number, label?: string, timeout?: number) =>
+  api.post<BatchResult>('/batch', { languages, power, label, timeout }, {
+    timeout: timeout ? (timeout + 10) * 1000 : 300000,
+  }).then(r => r.data)
+
+export const cancelRun = () =>
+  api.post<{ cancelled: boolean; reason?: string }>('/cancel').then(r => r.data)
 
 export const getRuns = (filters?: { language?: string; power?: number }) =>
   api.get<RunResult[]>('/runs', { params: filters }).then(r => r.data)

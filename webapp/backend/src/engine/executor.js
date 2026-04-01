@@ -5,9 +5,10 @@ import os from 'os';
 
 const TIMEOUT_MS = parseInt(process.env.EXECUTION_TIMEOUT_MS || '60000', 10);
 
-export async function execute(language, power) {
-  const startTime = Date.now();
-  
+// Track all currently running child processes so /api/cancel can kill them
+export const activeProcesses = new Set();
+
+export async function execute(language, power, timeoutMs = TIMEOUT_MS) {
   const runner = getRunner(language);
   if (!runner) {
     return {
@@ -23,7 +24,7 @@ export async function execute(language, power) {
     };
   }
   
-  // Build if needed
+  // Build if needed (not timed)
   if (runner.needsBuild && runner.getBuildCommand) {
     try {
       await runCommand(runner.getBuildCommand());
@@ -35,17 +36,18 @@ export async function execute(language, power) {
         stdout: '',
         stderr: `Build failed: ${buildError.message}`,
         exitCode: -1,
-        executionMs: Date.now() - startTime,
+        executionMs: 0,
         numbersFound: [],
         platform: os.platform()
       };
     }
   }
   
-  // Execute
+  // Execute (timing starts here, after build)
+  const startTime = Date.now();
   try {
     const cmd = runner.getCommand(power);
-    const result = await runCommand(cmd, TIMEOUT_MS);
+    const result = await runCommand(cmd, timeoutMs);
     const executionMs = Date.now() - startTime;
     
     const numbersFound = parseOutput(language, result.stdout);
@@ -99,6 +101,8 @@ function runCommand(cmd, timeout = 30000) {
       env: process.env,
       timeout: 0 // We handle timeout manually
     });
+
+    activeProcesses.add(proc);
     
     let stdout = '';
     let stderr = '';
@@ -125,6 +129,7 @@ function runCommand(cmd, timeout = 30000) {
     
     proc.on('error', (error) => {
       clearTimeout(timeoutHandle);
+      activeProcesses.delete(proc);
       reject({
         code: 'EXEC_ERROR',
         message: error.message,
@@ -136,6 +141,7 @@ function runCommand(cmd, timeout = 30000) {
     
     proc.on('close', (code) => {
       clearTimeout(timeoutHandle);
+      activeProcesses.delete(proc);
       
       if (timedOut) {
         reject({

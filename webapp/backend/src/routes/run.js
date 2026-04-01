@@ -18,7 +18,7 @@ try {
 
 router.post('/run', async (req, res) => {
   try {
-    const { language, power } = req.body;
+    const { language, power, timeout } = req.body;
     
     if (!language || typeof language !== 'string') {
       return res.status(400).json({ error: 'Missing or invalid language parameter' });
@@ -27,8 +27,12 @@ router.post('/run', async (req, res) => {
     if (power === undefined || typeof power !== 'number' || power < 1 || power > 20) {
       return res.status(400).json({ error: 'Invalid power parameter (must be number 1-20)' });
     }
+
+    const timeoutMs = (typeof timeout === 'number' && timeout >= 1)
+      ? timeout * 1000
+      : undefined;
     
-    const result = await execute(language, power);
+    const result = await execute(language, power, timeoutMs);
     const id = uuidv4();
     
     const run = {
@@ -48,7 +52,7 @@ router.post('/run', async (req, res) => {
 
 router.post('/batch', async (req, res) => {
   try {
-    const { languages, power, label } = req.body;
+    const { languages, power, label, timeout } = req.body;
     
     if (!Array.isArray(languages) || languages.length === 0) {
       return res.status(400).json({ error: 'Missing or invalid languages array' });
@@ -57,12 +61,16 @@ router.post('/batch', async (req, res) => {
     if (power === undefined || typeof power !== 'number' || power < 1 || power > 20) {
       return res.status(400).json({ error: 'Invalid power parameter (must be number 1-20)' });
     }
+
+    const timeoutMs = (typeof timeout === 'number' && timeout >= 1)
+      ? timeout * 1000
+      : undefined;
     
     const runs = [];
     const runIds = [];
     
     for (const language of languages) {
-      const result = await execute(language, power);
+      const result = await execute(language, power, timeoutMs);
       const id = uuidv4();
       
       const run = {

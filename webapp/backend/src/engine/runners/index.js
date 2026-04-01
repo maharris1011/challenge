@@ -61,14 +61,6 @@ export const nodejs = {
 export const go = {
   name: 'Go',
   dir: join(CHALLENGE_ROOT, 'go'),
-  needsBuild: true,
-  getBuildCommand() {
-    return {
-      cmd: 'go',
-      args: ['build', 'digitsum.go'],
-      cwd: join(CHALLENGE_ROOT, 'go')
-    };
-  },
   getCommand(power) {
     return {
       cmd: './digitsum',
@@ -81,14 +73,6 @@ export const go = {
 export const c = {
   name: 'C',
   dir: join(CHALLENGE_ROOT, 'C'),
-  needsBuild: true,
-  getBuildCommand() {
-    return {
-      cmd: 'make',
-      args: ['build'],
-      cwd: join(CHALLENGE_ROOT, 'C')
-    };
-  },
   getCommand(power) {
     return {
       cmd: './digitsum',
@@ -101,14 +85,6 @@ export const c = {
 export const cxx = {
   name: 'C++',
   dir: join(CHALLENGE_ROOT, 'CXX'),
-  needsBuild: true,
-  getBuildCommand() {
-    return {
-      cmd: 'make',
-      args: ['build'],
-      cwd: join(CHALLENGE_ROOT, 'CXX')
-    };
-  },
   getCommand(power) {
     return {
       cmd: './digitsum',
@@ -123,8 +99,8 @@ export const csharp = {
   dir: join(CHALLENGE_ROOT, 'csharp/cs-sum-of-digits-to-power'),
   getCommand(power) {
     return {
-      cmd: 'dotnet',
-      args: ['run', String(power)],
+      cmd: join(CHALLENGE_ROOT, 'csharp/cs-sum-of-digits-to-power/bin/Release/net10.0/osx-arm64/publish/cs-sum-of-digits-to-power'),
+      args: [String(power)],
       cwd: join(CHALLENGE_ROOT, 'csharp/cs-sum-of-digits-to-power')
     };
   }
@@ -135,8 +111,8 @@ export const fsharp = {
   dir: join(CHALLENGE_ROOT, 'fsharp'),
   getCommand(power) {
     return {
-      cmd: 'dotnet',
-      args: ['run', String(power)],
+      cmd: join(CHALLENGE_ROOT, 'fsharp/bin/Release/net10.0/osx-arm64/publish/fs-sum-of-digits-to-power'),
+      args: [String(power)],
       cwd: join(CHALLENGE_ROOT, 'fsharp')
     };
   }
@@ -145,10 +121,18 @@ export const fsharp = {
 export const haskell = {
   name: 'Haskell',
   dir: join(CHALLENGE_ROOT, 'haskell'),
-  getCommand(power) {
+  needsBuild: true,
+  getBuildCommand() {
     return {
       cmd: 'cabal',
-      args: ['run', 'haskell-sum-of-digits-exe', String(power)],
+      args: ['build'],
+      cwd: join(CHALLENGE_ROOT, 'haskell')
+    };
+  },
+  getCommand(power) {
+    return {
+      cmd: join(CHALLENGE_ROOT, 'haskell/dist-newstyle/build/aarch64-osx/ghc-9.4.8/haskell-sum-of-digits-0.1.0.0/x/haskell-sum-of-digits-exe/build/haskell-sum-of-digits-exe/haskell-sum-of-digits-exe'),
+      args: [String(power)],
       cwd: join(CHALLENGE_ROOT, 'haskell')
     };
   }
@@ -203,8 +187,8 @@ export const swift = {
   dir: join(CHALLENGE_ROOT, 'Swift/sum-of-digits-to-power/sum-of-digits-to-power'),
   getCommand(power) {
     return {
-      cmd: 'swift',
-      args: ['run', 'sum-of-digits-to-power', String(power)],
+      cmd: join(CHALLENGE_ROOT, 'Swift/sum-of-digits-to-power/sum-of-digits-to-power/.build/release/sum-of-digits-to-power'),
+      args: [String(power)],
       cwd: join(CHALLENGE_ROOT, 'Swift/sum-of-digits-to-power/sum-of-digits-to-power')
     };
   }

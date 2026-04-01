@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { getLanguages, runBatch, RunResult, Language } from '../api/client'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts'
+import { getLanguages, runBatch, cancelRun, RunResult, Language } from '../api/client'
 
 export default function Dashboard() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [power, setPower] = useState(3)
+  const [timeout, setTimeout] = useState(90)
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<RunResult[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [cancelStatus, setCancelStatus] = useState<string | null>(null)
 
   const { data: languages = [], isLoading: loadingLanguages } = useQuery({
     queryKey: ['languages'],
@@ -34,10 +36,11 @@ export default function Dashboard() {
 
     setIsRunning(true)
     setError(null)
+    setCancelStatus(null)
     setResults([])
 
     try {
-      const batch = await runBatch(selectedLanguages, power)
+      const batch = await runBatch(selectedLanguages, power, undefined, timeout)
       setResults(batch.runs)
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || 'Run failed')
@@ -46,11 +49,46 @@ export default function Dashboard() {
     }
   }
 
+  const handleCancel = async () => {
+    try {
+      await cancelRun()
+      setIsRunning(false)
+      setCancelStatus('Run cancelled')
+    } catch {
+      setCancelStatus('Could not cancel')
+    }
+    globalThis.setTimeout(() => setCancelStatus(null), 4000)
+  }
+
+  const formatTime = (ms: number) => {
+    if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`
+    return `${Math.round(ms)}ms`
+  }
+
   const chartData = results.map(r => ({
     language: r.language,
     time: r.executionMs,
     status: r.status,
+    label: r.status === 'success' ? formatTime(r.executionMs) : r.status,
   }))
+
+  const renderBarLabel = (props: any) => {
+    const { x, y, width, height, value } = props
+    if (!value) return null
+    const isShort = height < 24
+    return (
+      <text
+        x={x + width / 2}
+        y={isShort ? y - 5 : y + 14}
+        fill={isShort ? '#9ca3af' : 'rgba(255,255,255,0.9)'}
+        fontSize={11}
+        fontWeight={500}
+        textAnchor="middle"
+      >
+        {value}
+      </text>
+    )
+  }
 
   const getBarColor = (status: string) => {
     if (status === 'success') return '#10b981'
@@ -68,16 +106,30 @@ export default function Dashboard() {
         <h2 className="text-lg font-semibold mb-4">Configure Run</h2>
         
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Power (1–9)</label>
-            <input
-              type="number"
-              min="1"
-              max="9"
-              value={power}
-              onChange={e => setPower(parseInt(e.target.value) || 1)}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 w-32 text-white"
-            />
+          <div className="flex gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">Power</label>
+              <select
+                value={power}
+                onChange={e => setPower(parseInt(e.target.value))}
+                className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+              >
+                {[2, 3, 4, 5, 6, 7, 8, 9].map(n => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Timeout (seconds)</label>
+              <input
+                type="number"
+                min="1"
+                value={timeout}
+                onChange={e => setTimeout(Math.max(1, parseInt(e.target.value) || 1))}
+                className="bg-gray-800 border border-gray-700 rounded px-3 py-2 w-28 text-white"
+              />
+            </div>
           </div>
 
           <div>
@@ -108,19 +160,35 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <button
-            onClick={handleRun}
-            disabled={selectedLanguages.length === 0 || isRunning}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-2 rounded font-medium"
-          >
-            {isRunning ? 'Running...' : `Run ${selectedLanguages.length} Language${selectedLanguages.length !== 1 ? 's' : ''}`}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRun}
+              disabled={selectedLanguages.length === 0 || isRunning}
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white px-6 py-2 rounded font-medium"
+            >
+              {isRunning ? 'Running...' : `Run ${selectedLanguages.length} Language${selectedLanguages.length !== 1 ? 's' : ''}`}
+            </button>
+            {isRunning && (
+              <button
+                onClick={handleCancel}
+                className="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded font-medium"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {error && (
         <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 text-red-300">
           {error}
+        </div>
+      )}
+
+      {cancelStatus && (
+        <div className={`border rounded-lg p-4 ${cancelStatus === 'Run cancelled' ? 'bg-yellow-900/20 border-yellow-800 text-yellow-300' : 'bg-red-900/20 border-red-800 text-red-300'}`}>
+          {cancelStatus}
         </div>
       )}
 
@@ -154,6 +222,7 @@ export default function Dashboard() {
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={getBarColor(entry.status)} />
                   ))}
+                  <LabelList dataKey="label" content={renderBarLabel} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
