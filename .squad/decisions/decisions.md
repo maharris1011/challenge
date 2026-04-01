@@ -255,5 +255,126 @@ Keep Node.js/Express + React. Already aligned with decisions. Express localhost 
 
 ---
 
-**Last Updated:** 2026-04-01T14:46:30Z  
+### 5. Bar Chart Label Rendering Strategy
+
+**Date:** 2026-04-01  
+**Author:** Andy (Frontend Dev)  
+**Status:** ✅ Implemented
+
+#### Overview
+
+Added execution time labels to the bar chart on the Dashboard using Recharts `LabelList` with a fully custom SVG renderer (`renderBarLabel`).
+
+#### Details
+
+- **Label content:** `success` bars show formatted execution time (`123ms` / `1.2s`). `timeout` and `error` bars show the status word as the label — never blank.
+- **Positioning:** Custom logic based on rendered bar `height`. Bars shorter than 24px render the label *above* (y - 5); taller bars render inside near the top (y + 14).
+- **Color:** Above-bar labels use `#9ca3af` (gray-400) to stay readable against the dark background. Inside-bar labels use `rgba(255,255,255,0.9)` (near-white) against the colored bar fill.
+- **`formatTime`:** `>= 1000ms` shown as `"1.2s"`, under 1000ms shown as `"123ms"` (rounded integer).
+- **Data flow:** `label` field pre-computed in `chartData` map; `LabelList` uses `dataKey="label"` — keeps rendering logic clean.
+
+#### Impact
+
+Frontend-only change. No API or backend changes required.
+
+---
+
+### 6. Power Range 2–9 + Per-Request Timeout
+
+**Date:** 2026-04-01  
+**Author:** Andy (Frontend Dev)  
+**Status:** ✅ Implemented
+
+#### Power Range
+
+Changed the power input to a `<select>` locked to options 2–9. Previously allowed 1–9 as a number input, but power=1 produces trivial results (all single-digit numbers are narcissistic) and the number input allowed an empty/invalid state. Dropdown is cleaner and constrains valid inputs.
+
+#### Per-Request Timeout
+
+Added a `timeout` field (seconds) to the run configuration UI. Default: 90s. The backend now accepts `timeout` in the POST body for both `/run` and `/batch`, converts to ms, and passes it through to the executor. The executor previously used a module-level `TIMEOUT_MS` constant (from env); that constant is now the fallback default.
+
+**Rationale:** Some languages (e.g., Ruby, interpreted langs at high power values) run slow. Users should be able to extend the timeout for expensive runs without needing a backend config change.
+
+**Note:** `timeout` is optional on both endpoints; existing callers without it get the env default (no breaking changes).
+
+---
+
+### 7. Timeout Unit Conversion + Cancel Endpoint
+
+**Date:** 2026-04-15  
+**Author:** Data (Backend Dev)  
+**Status:** ✅ Implemented
+
+#### Timeout Unit Bug Fix
+
+**Problem:** User sets 90-second timeout in UI → frontend sends `{ timeout: 90 }` → backend `run.js` correctly converts to `timeoutMs = 90000` → `execute(language, power, 90000)` is called → **executor.js passes `TIMEOUT_MS` (the global default) to `runCommand` instead of the caller-provided `timeoutMs`** → processes run with 60s default or until axios's own 300000ms fires.
+
+**Fix:**
+- **executor.js:** `runCommand(cmd, TIMEOUT_MS)` → `runCommand(cmd, timeoutMs)`. No API surface changes.
+- **api/client.ts:** `runLanguage` and `runBatch` now pass per-request axios config `{ timeout: (timeout + 10) * 1000 }` so the HTTP layer gives the executor a 10-second grace window beyond the user timeout before dropping the connection.
+
+#### Cancel Endpoint
+
+- `activeProcesses: Set<ChildProcess>` exported from `executor.js` — populated on `spawn()`, cleared on `close` or `error`.
+- `POST /api/cancel` in `server.js` — iterates set, SIGTERM + SIGKILL-after-1s, clears set.
+- Returns `{ cancelled: true }` if processes were killed, `{ cancelled: false, reason: 'no active run' }` if set was empty.
+- `cancelRun()` exported from `frontend/src/api/client.ts` — ready for Cancel button integration.
+
+**Rationale:** Module-level Set is safe in single-process Node.js; no shared-memory race conditions. SIGTERM first (graceful), SIGKILL fallback (1s) mirrors existing timeout kill strategy.
+
+---
+
+### 8. Ruby Performance Optimization
+
+**Date:** 2026-04-01  
+**Owner:** Data (Backend Dev)  
+**Status:** ✅ Implemented
+
+#### Context
+
+The Ruby implementation of the narcissistic number algorithm (`digitsum.rb`) was slow compared to other languages, particularly for larger powers (7+). For power 9, the algorithm performs ~387 million outer iterations, making micro-optimizations critical.
+
+#### Optimizations Applied
+
+1. **divmod() for Digit Extraction** — Replace `n % 10` and `n / 10` with `n.divmod(10)` — one C call instead of two.
+
+2. **Inline find_in_10()** — Move inner loop logic into main iteration to eliminate method call overhead.
+
+3. **Manual Loop vs. Array Chain** — Replace `.select{}.map{}` with direct `10.times` loop and `<<` accumulation.
+
+4. **Adaptive Parallelism** — Use Ractors for power >= 8 (>38M iterations); single-threaded for smaller powers to avoid Ractor coordination overhead (~100ms+).
+
+#### Results
+
+**Performance (power 7):**
+- Original: 4.213s
+- Optimized: 3.526s
+- **Improvement: 16% speedup**
+
+**Correctness:** Verified with power 3 and 5 — output matches original implementation.
+
+#### Trade-offs
+
+- **Code complexity:** Increased (separate single/parallel paths, inlined logic)
+- **Maintainability:** Slightly reduced (more code, less Ruby-idiomatic)
+- **Performance:** Significant gain for large powers
+
+---
+
+## Decision Summary Table
+
+| Decision | Owner | Status | Impact |
+|----------|-------|--------|--------|
+| Backend API Contract | Data | ✅ Complete | Ready for frontend |
+| Frontend Scaffold | Andy | ✅ Complete | Ready to integrate |
+| Test Suite | Chunk | ✅ Complete | Validates implementation |
+| Stack: Express+React | Mikey | ✅ Approved | No Electron |
+| Bar Chart Labels | Andy | ✅ Implemented | Frontend visualization |
+| Power Range + Timeout UI | Andy | ✅ Implemented | User control |
+| Timeout & Cancel Fixes | Data | ✅ Implemented | Backend reliability |
+| Ruby Performance | Data | ✅ Implemented | 16% speedup |
+
+---
+
+**Last Updated:** 2026-04-01T19:12:32Z  
 **Merged from:** .squad/decisions/inbox/ (4 files)
