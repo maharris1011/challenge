@@ -1,0 +1,27 @@
+{
+  "name": "challenge-webapp-backend",
+  "version": "1.0.0",
+  "description": "Backend execution engine and API for challenge comparison webapp",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --test test/parsers.test.js test/api.test.js",
+    "test:integration": "node --test test/executor.test.js",
+    "test:all": "node --test test/"
+  },
+  "keywords": ["challenge", "execution", "api"],
+  "author": "Data (Backend Dev)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
