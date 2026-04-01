@@ -1,0 +1,10 @@
+{
+  "assignments": [
+    {
+      "assignment_id": "challenge-001",
+      "universe": "The Goonies",
+      "created_at": "2026-04-01T12:58:00Z",
+      "agents": ["Mikey", "Andy", "Data", "Chunk"]
+    }
+  ]
+}
