@@ -8,7 +8,7 @@ export function parseOutput(language, stdout) {
     c: parseDefault,
     cxx: parseDefault,
     csharp: parseCSharp,
-    fsharp: parseDefault,
+    fsharp: parseFSharp,
     haskell: parseDefault,
     elixir: parseDefault,
     elixirmix: parseDefault,
@@ -77,8 +77,16 @@ function parseJava(stdout) {
 }
 
 function parseCSharp(stdout) {
-  // C# likely similar to Java or default
   return parseDefault(stdout);
+}
+
+function parseFSharp(stdout) {
+  // F# output: "[153L; 370L; 371L; 407L]"
+  const match = stdout.match(/\[([0-9L;\s]+)\]/);
+  if (match) {
+    return match[1].split(';').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+  }
+  return [];
 }
 
 function parseDefault(stdout) {

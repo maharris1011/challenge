@@ -48,8 +48,8 @@ defmodule SumDigits do
     {opts,_,_}= OptionParser.parse(args, options)
     power = opts[:power]
 
-    squares = Enum.to_list(0..9).map(fn n -> :math.pow(n, power) end)
-    candidates = 10..SumDigits.max_number(power)
+    squares = Enum.to_list(0..9) |> Enum.map(fn n -> :math.pow(n, power) end) |> Enum.with_index() |> Enum.reduce(%{}, fn {v, k}, acc -> Map.put(acc, k, v) end)
+    candidates = 10..SumDigits.max_number(power)//1
     sum_matches_number = Stream.filter(candidates, 
       fn(n) -> SumDigits.sum_of_digits_to_power(squares, n) == n end)
 

@@ -191,8 +191,8 @@ export const rust = {
   dir: join(CHALLENGE_ROOT, 'rust'),
   getCommand(power) {
     return {
-      cmd: 'cargo',
-      args: ['run', '--', '--power', String(power)],
+      cmd: join(CHALLENGE_ROOT, 'rust/target/release/sumdigits'),
+      args: ['--power', String(power)],
       cwd: join(CHALLENGE_ROOT, 'rust')
     };
   }
